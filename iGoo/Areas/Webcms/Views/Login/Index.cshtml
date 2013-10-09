@@ -1,0 +1,55 @@
+﻿@using iGoo.Helpers
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>iCMS - &copy; Copyright Bình Minh Việt Co., Ltd - Dangcapweb.com</title>
+<meta name="robots" content="noindex,nofollow" />
+<link href="@Url.Content("~/Source/webcms/styles/styles.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Script/jquery.js")"></script> 
+<script type="text/javascript" src="@Url.Content("~/Script/libs_webcms.js")"></script>
+<script src="@Url.Content("~/Script/jquery.validate.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        datetime('datetime', 'VN');
+        $("#frmLogin").validate({
+            errorPlacement: function(error, element) {},
+		    rules:{
+			    txtUser: "required",
+                txtPassword: "required"
+		    }
+	    });
+    });
+</script>
+</head>
+
+<body>
+<div class="wrapper">
+    <!-- End toolbar -->
+    <div class="logo clearfix" style="margin:0;">
+    	<a class="hone" target="_blank" href="http://dangcapweb.com"><img src="@Url.Content("~/Source/webcms/images/logo.png")" /></a>
+        <a class="partner" target="_blank" href="http://binhminhviet.vn"><img height="55" src="@Url.Content("~/Source/webcms/images/logo-partner.png")" /></a>
+        <div class="datetime">
+        	<span id="datetime"></span>
+        </div>
+    </div>
+    <!-- Emd logo -->
+    <div class="login">
+    <form method="POST" action="@Url.Action("Check")" id="frmLogin">
+        @if (@Request.Get("error").Equals("1"))
+        {
+        <p class="error">Tên hoặc mật khẩu không đúng!</p>
+        }
+        <p><label>Tên đăng nhập </label><input name="txtUser" type="text" /></p>
+        <p><label>Mật khẩu </label><input type="password" name="txtPassword" /></p>
+        <p><button type="reset">Làm lại</button><button type="submit">Đăng nhập</button></p>
+    </form>
+    </div>
+    <!-- End main -->
+  <div class="footer">
+    	<span class="copyright"><strong>iCMS</strong> - &copy; Copyright <a href="http://binhminhviet.vn" target="_blank" title="Bình Minh Việt Co., Ltd">Bình Minh Việt Co., Ltd </a> - Hotline: 0982 489 833</span>
+    </div>
+    <!-- End footer -->
+</div> 
+</body>
+</html>

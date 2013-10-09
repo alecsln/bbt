@@ -1,0 +1,29 @@
+﻿@using iGoo.Helpers
+<div class="poll_view table-list">
+    <h3>@ViewBag.Poll[0]["Title"]</h3>
+    <table>
+        <thead>
+            <th style="width:30px;">#</th>
+            <th>Trả lời</th>
+            <th>Số phiếu</th>
+            <th style="width:200px;">Tỷ lệ</th>
+        </thead>
+        <tbody>
+            @for (int i = 1; i <= 10; i++)
+            {
+            if (!String.IsNullOrEmpty(ViewBag.Poll[0]["Response" + i]))
+            {
+            <tr>
+                <td>@i</td>
+                <td style="text-align:left;">@ViewBag.Poll[0]["Response" + i]</td>
+                <td>@ViewBag.Poll[0]["Vote" + i]/@ViewBag.Poll[0]["TotalVote"]</td>
+                <td>
+                    @{int percent = Convert.ToInt16(ViewBag.Poll[0]["Vote" + i]) * 100 / Convert.ToInt16(ViewBag.Poll[0]["TotalVote"]);}
+                    <div style="background:#106DB0; color:#FFF; width:@(percent)%; text-align:center;">@(percent)%</div>    
+                </td>
+            </tr>
+            }
+            }
+        </tbody>
+    </table>
+</div>

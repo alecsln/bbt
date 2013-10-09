@@ -1,0 +1,38 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home2.cshtml";
+}
+@section meta
+{
+<title>Đọc tin nhắn</title>
+<meta name="robots" content="noindex,nofollow" />
+}
+@section main
+{
+<div class="content-h cl">
+    <div class="main ch1">
+        <h2 class="title-c">Tin nhắn mới nhất</h2>
+        <div class="notifi">
+            <p>@ViewBag.ViewMessenger[0]["Title"]</p>
+            <p>Người gửi: @ViewBag.ViewMessenger[0]["UserName"]</p>
+            <p>Người nhận: @ViewBag.Receipt[0]["Receipt"]</p>
+            <p>Ngày gửi: @ViewBag.ViewMessenger[0]["Created"]</p>
+            <p>@ViewBag.ViewMessenger[0]["Content"]</p>
+            <a Title="Reply" href="/info/SendMessenger?id=@ViewBag.ViewMessenger[0]["MessengerID"]">Trả lời</a>
+        </div>
+    </div>
+
+    <div class="ch2">
+        <p><a title="Đặt câu hỏi và chia sẻ kinh nghiệm" rel="nofollow" href="/answer/question"><img alt="Đặt câu hỏi và chia sẻ" src="/Source/images/question.png" /></a></p>
+        <div class="news-h">
+            <h3 class="h3-title">Hỏi & Đáp mới nhất</h3>
+            <ul>
+                @foreach (var item in ViewBag.QuestionNew)
+                {
+                <li><a title="@item["Title"]" href="/hoidap/@(item["SEOName"]).html">@item["Title"]</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+        }

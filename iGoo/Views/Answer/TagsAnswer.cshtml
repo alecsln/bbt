@@ -1,0 +1,82 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>@ViewBag.TagsTitle.Replace('-', ' ') | Tags Hỏi & Đáp</title>
+<meta name="description" content="Tags Hỏi & Đáp: @ViewBag.TagsTitle.Replace('-', ' ') | @ViewBag.Website[0]["MetaTitle"]" />
+<meta name="keywords" content="@ViewBag.CategoryKeyword" />
+<link rel="canonical" href="http://@Libs.sApp("Domain")/hoidap/tags/@Html.Raw(ViewBag.TagsTitle)" />
+}
+@section head
+{
+<script src="/Script/jquery.validate.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $().ready(function () {
+
+        //Validate form
+        $("#frmAdd").validate({
+            errorPlacement: function (error, element) { },
+            rules: {
+                txtTitle: "required",
+                txtContent: "required"
+            }
+        });
+    });
+</script>
+}
+@section main
+{
+<div class="left">
+    <div class="menu-l">
+        <h3 class="h3-title">Hỏi & Đáp Google</h3>
+        @if (ViewBag.MenuAnswer.Count != 0)
+        {
+        <ul>
+            @foreach (var item in ViewBag.MenuAnswer)
+            {
+                if (String.IsNullOrEmpty(item["UrlLink"].ToString()))
+                {
+                    <li><a title="@item["MetaTitle"]" href="@(Url.Content("~/hoidap/"+item["SEOName"]+""))">@item["Name"]</a></li>
+                }
+                else
+                {
+                    <li><a title="@item["MetaTitle"]" href="@(item["UrlLink"])">@item["Name"]</a></li>
+                }
+            }
+        </ul>
+        }
+    </div>
+    <p><a title="Đặt câu hỏi và chia sẻ kinh nghiệm" rel="nofollow" href="/answer/question"><img src="/Source/images/question.png" width="160" /></a></p>
+</div>
+<!-- end left -->
+
+<div class="main f">
+    <h1 class="title-c">Tags: <a title="@ViewBag.TagsTitle.Replace('-', ' ')" href="@ViewBag.TagsTitle">@ViewBag.TagsTitle.Replace('-', ' ')</a></h1>
+    <div class="answer-l">
+    @if (ViewBag.Question.Count > 0)
+    {
+        foreach (var item in ViewBag.Question)
+        {
+        <div class="a cl">
+            <a title="Trang cá nhân G+ của @item["FullName"]" target="_blank" href="http://@(item["UserName"]).igoo.vn"><img class="av" alt="Ảnh cá nhân của item["FullName"]" src="@("".Equals(item["Image"].ToString()) ? Url.Content("~/Source/images/avatar.jpg") : item["Image"].ToString())" /></a>
+            <h2><a title="@item["Title"]" href="@(Url.Content("~/hoidap/"+item["SEOName"]+"")).html">@item["Title"]</a></h2>
+            <p class="d">@(Libs.ToPrettyDate(Convert.ToDateTime(item["Modified"])))</p>
+            <div class="r">
+                <p><g:plusone size="small" href="http://igoo.vn/hoidap/@(item["SEOName"]).html"></g:plusone></p>
+                <p class="t">@item["TotalAnswer"] Trả lời</p>
+            </div>
+        </div>
+        }
+    }
+    else
+    {
+        <p class="not-found">Nội dung đang được cập nhật!</p>
+    }
+    </div>
+</div>
+<div class="getsocial">
+    <div class="b"><g:plusone size="tall"></g:plusone></div>
+</div>
+}

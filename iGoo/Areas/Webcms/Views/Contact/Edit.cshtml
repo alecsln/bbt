@@ -1,0 +1,157 @@
+﻿@using iGoo.Helpers
+
+@{
+    Layout = "~/Areas/Webcms/Views/Shared/Layout.cshtml";
+}
+
+@section head
+{
+
+<script src="@Url.Content("~/Script/ckeditor/ckeditor.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Script/jquery.validate.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        ActionForm('@Url.Action(String.Empty)');
+
+        SearchForm();
+
+        editorBasic("txtContentReply");
+
+        ShowUpload();
+
+        //Validate form
+        $("#frmAdd").validate({
+            errorPlacement: function (error, element) { },
+            rules: {
+                txtSubjectReply: "required",
+                txtContentReply: "required"
+            }
+        });
+
+        $('button[id="btnReply"]').click(function () {
+            $('#frmReply').attr('method', "POST");
+            $('#frmReply').attr('action', '@Url.Action(String.Empty)' + "/Reply");
+            //$('input:checkbox[title="ckID"]').attr('checked', true);
+            $('#frmReply').submit();
+        });
+
+    });
+</script>
+
+}
+
+@section content
+{
+        <div class="full"></div>
+        <div class="panel upload">
+            <iframe class="iframe" name="fUpload" id="fUpload"></iframe>
+        </div>
+        <div class="box-content">
+            <div class="title">
+                <img src="@Url.Content("~/Source/webcms/images/home.png")" />
+                <span>Sửa liên hệ</span>
+                <button type="button" onclick="history.back(-1);">Quay lại</button>
+            </div>
+            <!-- End title -->
+            @if(@Request.Get("error").Equals("1"))
+            {
+            <p class="error">Có lỗi, xin hãy kiểm tra và thử lại!</p>
+            }
+            else if (@Request.Get("error").Equals("0"))
+            {
+            <p class="error">Mail vẫn chưa được gửi, hãy thử lại!</p>
+            }
+            <input type="hidden" name="returnUrl" value="@Request.Query(string.Empty)" />
+            <div class="content-right add">
+            	<div class="item-box">
+                	<form id="frmAdd">
+                    <table class="table-add">
+                        <tbody>
+                            <tr>
+                                <th><label>Họ và tên</label></th>
+                                <td><input type="text" name="txtFullName" id="txtFullName" value="@ViewBag.Edit[0]["FullName"]" readonly="readonly" /></td>
+                            </tr>
+                            <tr>
+                                <th><label>Email</label></th>
+                                <td><input type="text" name="txtEmail" id="txtEmail" value="@ViewBag.Edit[0]["Email"]" readonly="readonly" /></td>
+                            </tr>
+                            <tr>
+                                <th><label>Số điện thoại</label></th>
+                                <td><input type="text" name="txtPhone" id="txtPhone" value="@ViewBag.Edit[0]["Phone"]" readonly="readonly" /></td>
+                            </tr>
+                            <tr>
+                                <th><label>Trạng thái</label></th>
+                                <td>
+                                <select class="change" name="slStatus" title="@ViewBag.Edit[0]["Status"]" disabled="disabled" >
+                                    <option value="0">Chưa xem</option>
+                                    <option value="1">Đã xem</option>
+                                    <option value="2">Đã trả lời</option>
+                                </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label>Nhóm liên hệ</label></th>
+                                <td>
+                                <select name="slSearchGroupContact" title="@ViewBag.Edit[0]["GroupID"]" >
+                                    <option value="">Nhóm liên hệ</option>
+                                    @foreach (var item in ViewBag.GroupContact)
+                                    {
+                                    <option value="@item["AttributeID"]">@item["Name"]</option>
+                                    }
+                                </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label>Ngày gửi</label></th>
+                                <td><input type="text" name="txtCreated" id="txtCreated" value="@ViewBag.Edit[0]["Created"]" readonly="readonly" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="action">
+                        <input type="hidden" name="ID" id="ID" value="@Request.Get("ID")" />
+                        <button type="button" id="btnUpdate">Cập nhật</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+            <!-- End box2 -->
+            <div class="content-left add">
+            	<div class="item-box">
+                	<h3 class="item-title">Nội dung liên hệ</h3>
+                    <table class="table-add">
+                        <tbody>
+                            <tr>
+                                <th><label>Tiêu đề</label></th>
+                                <td><input type="text" name="txtSubject" id="txtSubject" value="@ViewBag.Edit[0]["Subject"]" readonly="readonly" /></td>
+                            </tr>
+                            <tr>
+                                <th><label>Nội dung</label></th>
+                                <td><textarea id="txtContent" name="txtContent" rows="10"  readonly="readonly">@ViewBag.Edit[0]["Content"]</textarea></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <form id="frmReply">
+                <input type="hidden" name="ID" id="ID" value="@Request.Get("ID")" />
+                <div class="item-box">
+                	<h3 class="item-title">Trả lời</h3>
+                    <table class="table-add">
+                        <tbody>
+                            <tr>
+                                <th><label>Tiêu đề</label></th>
+                                <td><input type="text" name="txtSubjectReply" id="txtSubjectReply" value="@ViewBag.Edit[0]["SubjectReply"]" /></td>
+                            </tr>
+                            <tr>
+                                <th><label>Nội dung</label></th>
+                                <td><textarea id="txtContentReply" name="txtContentReply" rows="10" >@ViewBag.Edit[0]["ContentReply"]</textarea></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p><button type="button" id="btnReply">Gửi</button></p>
+                </form>
+            </div>
+            <!-- End box1 -->
+        </div>
+        <!-- End content -->
+}

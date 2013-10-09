@@ -1,0 +1,139 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>@ViewBag.Category[0]["MetaTitle"]</title>
+@if(!String.IsNullOrEmpty(ViewBag.Category[0]["MetaDescription"].ToString()))
+{
+<meta name="description" content="@ViewBag.Category[0]["MetaDescription"]" />
+}
+else
+{
+<meta name="description" content="@ViewBag.Category[0]["MetaTitle"] | @ViewBag.Website[0]["MetaTitle"]" />
+}
+<meta name="keywords" content="@ViewBag.Category[0]["MetaKeyword"]" />
+<link rel="canonical" href="http://@Libs.sApp("Domain")/@Html.Raw(ViewBag.Category[0]["SEOName"])" />
+<link rel="alternate" type="application/rss+xml" title="@ViewBag.Category[0]["MetaTitle"] Feed" href="http://@Libs.sApp("Domain")/@(Html.Raw(ViewBag.Category[0]["SEOName"])).rss" />
+}
+@section main
+{
+<div class="content-h cl">
+    <div class="ch1">
+        <div class="title-c cl nv">
+            <a rel="nofollow" title="Trang chủ" href="/"><span>Trang chủ</span></a><span class="fl">&raquo;</span>
+            <h1><a itemscope itemtype="http://data-vocabulary.org/Breadcrumb" itemprop="url" title="@ViewBag.Category[0]["MetaTitle"]" href="@(ViewBag.Category[0]["SEOName"])"><span itemprop="title">@ViewBag.Category[0]["Name"]</span></a></h1>
+            <a target="_blank" title="/@ViewBag.Category[0]["MetaTitle"] RSS" href="@(ViewBag.Category[0]["SEOName"]).rss"><img alt="RSS" src="/Source/images/rss.png" /></a>
+        </div>
+        <div class="news-l">
+        @if (ViewBag.News.Count > 0)
+        {
+            foreach (var item in ViewBag.News)
+            {
+            <div class="n cl">
+                <h2><a title="@item["MetaTitle"]" href="/@(item["SEOName"]).html">@item["Title"]</a></h2>
+                <p class="d">
+                <a rel="nofollow" rel="author" title="Trang cá nhân G+ của @item["FullName"]" href="https://plus.google.com/@item["GoogleID"]/posts" target="_blank">@item["FullName"]</a>
+                | @item["TotalComment"] bình luận | @(Libs.ToDateString("dddd, dd/MM/yyyy - hh:mm", Convert.ToDateTime(item["Created"]))) <g:plusone size="small" href="http://igoo.vn/@(item["SEOName"]).html"></g:plusone>
+                </p>
+                <a title="@item["MetaTitle"]" href="/@(item["SEOName"]).html"><img alt="@item["MetaTitle"]" class="img" src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "100x100")))" /></a>
+                <p class="b">@item["Brief"]</p>
+
+                @if (!String.IsNullOrEmpty(item["Tags"].ToString()))
+                {
+                <p class="t atag">
+                @foreach (var tags in item["Tags"].ToString().Split(','))
+                {
+                    <a title="@tags.Trim()" href="/tags/@tags.Trim().Replace(' ', '-')">@tags.Trim()</a>
+                }
+                </p>
+                }
+            </div>
+            }
+
+            int space = 5, a, b;
+            int p = Convert.ToInt32(ViewBag.TotalPages);
+            int c = Convert.ToInt32(ViewBag.CategoryPage);
+            if (c > space) { a = c - space; } else { a = 1; }
+            if (c + space > p) { b = p; } else { b = c + space; }
+
+            <div class="page cl">
+                <span>Trang @ViewBag.CategoryPage / @ViewBag.TotalPages</span>
+                @for (int i = a; i <= b; i++)
+                {
+                    if (i == c)
+                    {
+                    <a class="page-c" title="@ViewBag.Category[0]["MetaTitle"] - Trang @(i.ToString())" href="/@(i == 1 ? ViewBag.Category[0]["SEOName"] : ViewBag.Category[0]["SEOName"] + "/" + i.ToString())">@i.ToString()</a>
+                    }
+                    else
+                    {
+                    <a @Html.Raw(i - c == 1 ? "rel=\"next\"" : string.Empty)@Html.Raw(c - i == 1 ? "rel=\"prev\"" : string.Empty) title="@ViewBag.Category[0]["MetaTitle"] - Trang @(i.ToString())" href="/@(i == 1 ? ViewBag.Category[0]["SEOName"] : ViewBag.Category[0]["SEOName"] + "/" + i.ToString())">@i.ToString()</a>
+                    }
+                }
+                @if(c>1)
+                {
+                    <link rel="prev" href="http://@Libs.sApp("Domain")/n/@(ViewBag.Category[0]["SEOName"] + "/" + (c-1).ToString())" />
+                }
+                @if(c<p)
+                {
+                    <link rel="next" href="http://@Libs.sApp("Domain")/n/@(ViewBag.Category[0]["SEOName"] + "/" + (c +1).ToString())" />
+                }
+            </div>
+        }
+        else
+        {
+            <p class="not-found">Nội dung đang được cập nhật!</p>
+        }
+
+        @if (!String.IsNullOrEmpty(ViewBag.Category[0]["Description"].ToString()))
+        { 
+        <div>
+            <h3 class="title-c">Giới thiệu</h3>
+            @Html.Raw(ViewBag.Category[0]["Description"])
+        </div>
+        }
+        
+        </div>
+    </div>
+    <!-- end ch1 -->
+    <div class="ch2">
+        <div class="adv">
+        @foreach (var item in ViewBag.AdvRight)
+        {
+            if (Path.GetExtension(item["File"]).ToLower().Equals(".swf"))
+            {
+            <embed src="/Uploads/@item["File"]" width="@item["Width"]" height="@item["Height"]" type="application/x-shockwave-flash" wmode="transparent"></embed>
+            }
+            else
+            {
+            <p><a title="@item["Title"]" @Html.Raw(item["Target"].ToString().Equals("1") ? "target=\"_blank\"" : String.Empty) href="@item["UrlLink"]"><img alt="@item["Title"]" src="/Uploads/@item["File"]" width="208" /></a></p>
+            }
+        }
+        </div>
+        @if (ViewBag.NewsComment.Count > 0)
+        {
+        <div class="news-h">
+            <h3>Bình luận mới nhất</h3>
+            <ul>
+                @foreach (var item in ViewBag.NewsComment)
+                {
+                <li><a title="@item["MetaTitle"]" href="@(item["SEOName"]).html">@item["Title"]</a></li>
+                }
+            </ul>
+        </div>
+        }
+        
+        @if (!String.IsNullOrEmpty(ViewBag.Category[0]["SEOTags"].ToString()))
+        {
+        <div class="tagcloud atag">
+            <h3>Từ khoá - Tags</h3>
+            @foreach (var item in ViewBag.Category[0]["SEOTags"].ToString().Split(','))
+            {
+                <a rel="tag" title="@item.Trim()" href="/tags/@item.Trim().Replace(' ', '-')">@item.Trim()</a>
+            }
+        </div>
+        }
+    </div>
+</div>
+}

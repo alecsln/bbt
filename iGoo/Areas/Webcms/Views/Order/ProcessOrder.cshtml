@@ -1,0 +1,165 @@
+﻿@using iGoo.Helpers
+
+@{
+    Layout = "~/Areas/Webcms/Views/Shared/Layout.cshtml";
+}
+
+@section head
+{
+
+<script src="@Url.Content("~/Script/jquery.validate.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        ActionForm('@Url.Action(String.Empty)');
+        SearchForm();
+    });
+    function DeleteOrderDetail (id) {
+        if (confirm("Bạn thực sự muốn xóa?")) {
+                $.post("@Url.Action("DeleteOrderDetail")", {id: id},
+
+                function (data) {
+                    alert(data);
+                    location.reload(true);
+                });
+            }
+        };
+</script>
+
+}
+
+@section content
+{
+        <div class="box-content">
+			<div class="content-left f">
+                <div class="title">
+                    <img src="@Url.Content("~/Source/webcms/images/home.png")" />
+                    <span>Quản lý tin tức</span>
+                    <button type="button" onclick="history.back(-1);">Quay lại</button>
+                </div>
+                <!-- End title -->
+                <!-- End search -->
+                <form id="frmList">
+                <div class="list order">
+                    @if (@Request.Get("result").Equals("1"))
+                    {
+                        <p class="result">Cập nhật thành công!</p>
+                    }
+                    @if (@Request.Get("error").Equals("1"))
+                    {
+                    <p class="error">Có lỗi, xin hãy kiểm tra và thử lại!</p>
+                    }
+
+                    <div class="the-order">
+                        <p><label>Người mua hàng</label><input type="text" name="txtFullName" id="txtFullName" value="@ViewBag.Edit[0]["FullNameTo"]" /></p>
+                        <p><label>Địa chỉ</label><input type="text" name="txtAddress" id="txtAddress" lang="ImageFile" value="@ViewBag.Edit[0]["AddressTo"]" /></p>
+                        <p><label>Email</label><input type="text" name="txtEmail" id="txtEmail" value="@ViewBag.Edit[0]["EmailTo"]" /></p>
+                        <p><label>Số điện thoại</label><input type="text" name="txtPhone" id="txtPhone" value="@ViewBag.Edit[0]["PhoneTo"]" /></p>
+                        <p><label>Yêu cầu thêm</label><textarea id="txtRequest" name="txtRequest" rows="5">@ViewBag.Edit[0]["Request"]</textarea></p>
+                        <p></p>
+                    </div>
+                    <div class="consignee">
+                        <p><label>Người nhận hàng</label><input type="text" name="txtFullName" id="txtFullName" value="@ViewBag.Edit[0]["FullName"]" /></p>
+                        <p><label>Địa chỉ</label><input type="text" name="txtAddress" id="txtAddress" lang="ImageFile" value="@ViewBag.Edit[0]["Address"]" /></p>
+                        <p><label>Email</label><input type="text" name="txtEmail" id="txtEmail" value="@ViewBag.Edit[0]["Email"]" /></p>
+                        <p><label>Số điện thoại</label><input type="text" name="txtPhone" id="txtPhone" value="@ViewBag.Edit[0]["Phone"]" /></p>
+                    </div>
+
+                    <div class="page">
+                        <div class="action">
+                            <button type="button" id="btnActionUpdate">Cập nhật</button>
+                        </div>
+                    </div>
+                    <!-- End page -->
+                    <div class="table-list">
+                        <table>
+                            <thead>
+                                <th>#</th>
+                                <th style="width:30px;"><input type="checkbox" value="ckID" id="ckCheckAll" /></th>
+                                <th><a class="@(Request.Get("OrderBy").Equals("SKU") ? (Request.Get("Order").Equals("asc") ? "desc" : "asc") : String.Empty)" href="@Request.Query("OrderBy=SKU&Order=" + (Request.Get("Order").Equals("asc") ? "desc" : "asc"))" >Mã sản phẩm</a></th>
+                                <th><a class="@(Request.Get("OrderBy").Equals("Title") ? (Request.Get("Order").Equals("asc") ? "desc" : "asc") : String.Empty)" href="@Request.Query("OrderBy=Title&Order=" + (Request.Get("Order").Equals("asc") ? "desc" : "asc"))" >Tên sản phẩm</a></th>
+                                <th><a class="@(Request.Get("OrderBy").Equals("Quantity") ? (Request.Get("Order").Equals("asc") ? "desc" : "asc") : String.Empty)" href="@Request.Query("OrderBy=Quantity&Order=" + (Request.Get("Order").Equals("asc") ? "desc" : "asc"))" >Số lượng</a></th>
+                                <th><a class="@(Request.Get("OrderBy").Equals("Price") ? (Request.Get("Order").Equals("asc") ? "desc" : "asc") : String.Empty)" href="@Request.Query("OrderBy=Price&Order=" + (Request.Get("Order").Equals("asc") ? "desc" : "asc"))" >Giá sản phẩm(VNĐ)</a></th>
+                                <th>Thành giá</th>
+                            </thead>
+                            <tbody>
+                                @{int count = 0;}
+                                @foreach (var item in ViewBag.OrderDetails)
+                                {
+                                    count += 1;
+                                <tr>
+                                    <td>@count</td>
+                                    <td><input type="checkbox" title="ckID" name="ckID-@count" value="@item["OrderDetailID"]" />
+                                        <input type="hidden" title="hID" name="hID-@count" value="@item["OrderDetailID"]" />
+                                    </td>
+                                    <td class="subject">
+                                        <span>@item["SKU"] (<i>@item["ProductType"]</i>)</span>
+                                        <div class="edit">
+                                            <a class="actionDelete" href="javascript:DeleteOrderDetail('@item["OrderDetailID"]');">Xóa</a>
+                                        </div>
+                                    </td>
+                                    <td>@item["Title"]</td>
+                                    <td><input type="text" value="@item["Quantity"]" name="txtQuantity-@count" /></td>
+                                    <td><input type="text" value="@item["Price"]" name="txtPrice-@count" /></td>
+                                    <td>@item["Cash"]</td>
+                                </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <th>#</th>
+                                <th style="width:30px;"><input type="checkbox" value="ckID" id="ckCheckAll" /></th>
+                                <th><a class="@(Request.Get("OrderBy").Equals("SKU") ? (Request.Get("Order").Equals("asc") ? "desc" : "asc") : String.Empty)" href="@Request.Query("OrderBy=SKU&Order=" + (Request.Get("Order").Equals("asc") ? "desc" : "asc"))" >Mã sản phẩm</a></th>
+                                <th><a class="@(Request.Get("OrderBy").Equals("Title") ? (Request.Get("Order").Equals("asc") ? "desc" : "asc") : String.Empty)" href="@Request.Query("OrderBy=Title&Order=" + (Request.Get("Order").Equals("asc") ? "desc" : "asc"))" >Tên sản phẩm</a></th>
+                                <th><a class="@(Request.Get("OrderBy").Equals("Quantity") ? (Request.Get("Order").Equals("asc") ? "desc" : "asc") : String.Empty)" href="@Request.Query("OrderBy=Quantity&Order=" + (Request.Get("Order").Equals("asc") ? "desc" : "asc"))" >Số lượng</a></th>
+                                <th><a class="@(Request.Get("OrderBy").Equals("Price") ? (Request.Get("Order").Equals("asc") ? "desc" : "asc") : String.Empty)" href="@Request.Query("OrderBy=Price&Order=" + (Request.Get("Order").Equals("asc") ? "desc" : "asc"))" >Giá sản phẩm(VNĐ)</a></th>
+                                <th>Thành giá</th>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div>
+                        <p><label>Tax: </label><input type="text" name="txtTax" id="txtTax" value="@ViewBag.Edit[0]["Tax"]" /></p>
+                        <p><label>TransportFee: </label><input type="text" name="txtTransportFee" id="txtTransportFee" value="@ViewBag.Edit[0]["TransportFee"]" /></p>
+                        <p><label>Discount: </label><input type="text" name="txtDiscount" id="txtDiscount" value="@ViewBag.Edit[0]["Discount"]" /></p>
+                        <p><label>Voucher: </label>@ViewBag.Edit[0]["Voucher"]</p>
+                        <p><label>Tổng giá trị đơn hàng: </label>@ViewBag.Edit[0]["TotalPrice"]</p>
+                        <p><label>Số tiền phải thanh toán: </label>@ViewBag.Edit[0]["Cash"]</p>
+                        
+                        <p><label>Mã đơn hàng: </label><input type="text" name="txtOrderCode" id="txtOrderCode" value="@ViewBag.Edit[0]["OrderCode"]" /></p>
+                        <p><label>Comment: </label><textarea id="txtComment" name="txtComment" rows="5">@ViewBag.Edit[0]["Comment"]</textarea></p>
+                        <p><label>Trạng thái: </label>
+                            <select name="slStatus" title="@ViewBag.Edit[0]["Status"]">
+                                <option value="0">Chờ xử lý</option>
+                                <option value="1">Đang chuyển hàng</option>
+                                <option value="2">Hoàn tất</option>
+                                <option value="3">Hoàn lại</option>
+                                <option value="4">Huỷ bỏ</option>
+                            </select>
+                        </p> 
+                        <p><label>Hình thước thanh toán: </label>
+                            <select name="slPayment" title="@ViewBag.Edit[0]["PaymentID"]">
+                                <option value="">Chưa chọn hình thức thanh toán</option>
+                                @foreach (var item in ViewBag.Payment)
+                                {
+                                <option value="@item["AttributeID"]">@item["Name"]</option>
+                                }
+                            </select>
+                        </p> 
+                        <p><label>Created</label><input type="text" name="txtCreated" id="txtCreated" value="@ViewBag.Edit[0]["Created"]" /></p>
+                        <p><label>OrderSend</label><input type="text" name="txtOrderSend" id="txtOrderSend" value="@ViewBag.Edit[0]["OrderSend"]" /></p>
+                    </div>
+                    <div class="page">
+                        <div class="action">
+                            <input type="hidden" name="count" value="@count" />
+                            <input type="hidden" name="OrderID" value="@ViewBag.Edit[0]["OrderID"]" />
+                            <button type="button" id="btnActionUpdate">Cập nhật</button>
+                        </div>
+                    </div>
+                    <!-- End page -->
+                </div>
+                <!-- End list -->
+                </form>
+            </div>
+            <!-- End box1 -->
+            </form>
+        </div>
+        <!-- End content -->
+}

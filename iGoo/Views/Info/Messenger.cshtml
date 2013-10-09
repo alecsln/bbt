@@ -1,0 +1,84 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home2.cshtml";
+}
+@section meta
+{
+<title>Tin nhắn</title>
+<script type="text/javascript">
+    function DeleteMessenger(id) {
+        $.post("@Url.Action("DeleteMessenger")", {id: id},
+        function (data) {
+            if("0" == data)
+                $('.result').html("Xin lỗi! Vui lòng hãy thử lại!");
+            else
+            {
+                window.location.href = "/info/Messenger";
+            }
+        });
+    }
+</script>
+<meta name="robots" content="noindex,nofollow" />
+}
+@section main
+{
+<div class="content-h cl">
+    <div class="main ch1">
+        <h2 class="title-c">Tin nhắn mới nhất</h2>
+        <a Title="Gửi messenger" href="/info/SendMessenger">Gửi mail</a>
+        <p class="result"></p>
+        <div class="notifi">
+        @foreach (var item in ViewBag.Messenger)
+        {
+            <p>
+                @if(Convert.ToInt32(item["status"]) == 0)
+                {
+                    <a  href="ViewMessenger?id=@item["MessengerID"]"><b>@item["Title"]</b></a>
+                }
+                else
+                {
+                    <a  href="ViewMessenger?id=@item["MessengerID"]">@item["Title"]</a>
+                }
+                |@(Convert.ToInt32(item["Sender"]) == 0 ? "Người gửi: " : "Người nhận: ") @item["UserName"]
+                |Giờ gửi: @item["Created"] | <a class="actionDelete" href="javascript:DeleteMessenger('@item["MessengerID"]');">Xóa</a>
+            </p>
+        }
+        </div>
+        
+        @{
+            int space = 5, a, b;
+            int p = Convert.ToInt32(ViewBag.TotalPages);
+            int c = Convert.ToInt32(ViewBag.CategoryPage);
+            if (c > space) { a = c - space; } else { a = 1; }
+            if (c + space > p) { b = p; } else { b = c + space; }
+        }
+        <div class="page cl">
+            <span>Trang @ViewBag.CategoryPage / @ViewBag.TotalPages</span>
+            @for (int i = a; i <= b; i++)
+            {
+                if (i == c)
+                {
+                <a class="page-c" title="Trang @(i.ToString())" href="/info/notification/@i.ToString()">@i.ToString()</a>
+                }
+                else
+                {
+                <a title="Trang @(i.ToString())" href="/info/notification/@i.ToString()">@i.ToString()</a>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="ch2">
+        <p><a title="Đặt câu hỏi và chia sẻ kinh nghiệm" rel="nofollow" href="/answer/question"><img alt="Đặt câu hỏi và chia sẻ" src="/Source/images/question.png" /></a></p>
+        <div class="news-h">
+            <h3 class="h3-title">Hỏi & Đáp mới nhất</h3>
+            <ul>
+                @foreach (var item in ViewBag.QuestionNew)
+                {
+                <li><a title="@item["Title"]" href="/hoidap/@(item["SEOName"]).html">@item["Title"]</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+}

@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>iCMS - &copy; Copyright Bình Minh Việt Co., Ltd - Dangcapweb.com</title>
+<link href="@Url.Content("~/Source/webcms/styles/styles.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Script/jquery.js")"></script> 
+<script type="text/javascript" src="@Url.Content("~/Script/libs_webcms.js")"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        loadDefault();
+        $('.table-list tbody tr:odd').css("background-color", "#FFF");
+    });
+</script>
+@RenderSection("head", true)
+</head>
+
+<body>
+<div class="wrapper">
+	<div class="toolbar">
+    	<div class="left">
+            <span>Xin chào, </span><a href="@Url.Action(string.Empty, "User")?ID=@Session["UserID"]">@Session["FullNameAdmin"]</a><span> | </span><a href="@Url.Action("Logout", "Login")">Thoát</a>
+        </div>
+        <div class="right">
+        	
+            <a id="onTop" href="#"><img src="@Url.Content("~/Source/webcms/images/top.png")" /></a>
+        </div>
+        <div class="cl"></div>
+    </div>
+    <!-- End toolbar -->
+    <div class="logo">
+    	<a class="hone" target="_blank" href="http://dangcapweb.com"><img src="@Url.Content("~/Source/webcms/images/logo.png")" /></a>
+        <a class="partner" target="_blank" href="http://binhminhviet.vn"><img height="55" src="@Url.Content("~/Source/webcms/images/logo-partner.png")" /></a>
+        <div class="datetime">
+        	<span id="datetime"></span>
+        </div>
+        <div class="cl"></div>
+    </div>
+    <!-- Emd logo -->
+    <div class="main">
+    	<div class="box-left">
+            @foreach (var item in ViewBag.Menu)
+            {
+        	<div class="menu">
+            	<h3>@item.Name</h3>
+                <ul>
+                    @foreach (var item1 in @item.Menu)
+                    {
+                	<li><a href="@Url.Action(String.Empty, @item1.UrlLink.ToString())">@item1.Name</a></li>
+                    }
+                </ul>
+            </div>
+            }
+        </div>
+        <!-- Emd left -->
+        @RenderSection("content", true)
+      <div class="clearfix"></div>
+    </div>
+    <!-- End main -->
+</div> 
+</body>
+</html>

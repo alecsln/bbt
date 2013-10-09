@@ -1,0 +1,236 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>@ViewBag.Website[0]["MetaTitle"]</title>
+<meta name="description" content="@ViewBag.Website[0]["MetaDescription"]" />
+<meta name="keywords" content="@ViewBag.Website[0]["MetaKeyword"]" />
+<link rel="canonical" href="http://@Libs.sApp("Domain")" />
+}
+@section head
+{
+<script type="text/javascript" src="/Script/jquery.tooltip.js"></script>
+
+<script type="text/javascript" src="/Script/fancybox/jquery.fancybox.js"></script>
+<link href="/Script/fancybox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript">
+    $(function () {
+        $('#slider').bxSlider({
+            mode: 'fade',
+            auto: true
+        });
+
+        $(".tooltip").tooltip({
+            bodyHandler: function () {
+                return $(this).children(".tooltip_content").html()
+            },
+            track: true,
+            showURL: false
+        });
+
+        poll();
+
+    });
+</script>
+}
+@section main
+{
+<div class="intro cl">
+    <div class="slide">
+        <ul id="slider">
+        @foreach (var item in ViewBag.AdvSlide)
+        {
+            if (Path.GetExtension(item["File"]).ToLower().Equals(".swf"))
+            {
+            <li><embed src="/Uploads/@item["File"]" width="610" height="220" type="application/x-shockwave-flash" wmode="transparent"></embed></li>
+            }
+            else
+            {
+            <li><p><a title="@item["Title"]" @Html.Raw(item["Target"].ToString().Equals("1") ? "target=\"_blank\"" : String.Empty) href="@item["UrlLink"]"><img alt="@item["Title"]" src="/Uploads/@item["File"]" width="610" height="220" /></a></p></li>
+            }
+        }
+        </ul>
+    </div>
+    <div class="news-h">
+        <h3>Thông tin từ Baby của tôi!</h3>
+        <ul>
+            @foreach (var item in ViewBag.NewsNew)
+            {
+            <li><a title="@item["MetaTitle"]" href="@(item["SEOName"]).html">@item["Title"]</a></li>
+            }
+        </ul>
+    </div>
+</div>
+<!-- end intro -->
+<div class="content-h cl">
+    <div class="ch1-home">
+        <div class="list-p cl">
+            <h3 class="title-c">Sản phẩm khuyến mại</h3>
+            <div class="list">
+                @foreach (var item in ViewBag.ProductSale)
+                {
+                <div class="item tooltip">
+                    <h2><a class="title" href="/p/@(item["SEOName"]).html" title="@item["MetaTitle"]">@item["Title"]</a></h2>
+                    <div class="p-img">
+                        <div class="event">
+                        @if(!item["DiscountPercent"].ToString().Equals("0"))
+                        {
+                        <span class="pr">-@item["DiscountPercent"]%</span>
+                        }
+                        @if(item["Type"].IndexOf("GIFT")>=0)
+                        {
+                        <span class="gift"></span>
+                        }
+                        </div>
+                        <a href="/p/@(item["SEOName"]).html" title="@item["MetaTitle"]"><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "170x153")))" alt="@item["MetaTitle"]" /></a>
+                    </div>
+                    @if (!String.IsNullOrEmpty(@item["Promotion"].ToString()))
+                    {
+                    <p><strong class="promotion">KM:</strong> @item["Promotion"]</p>
+                    }
+                    <p><span class="price">Giá bán: @Libs.sCurrency(Convert.ToDecimal(item["SalePrice"]))₫</span></p>
+                    <div class="tooltip_content">
+                        <p class="title">@item["Title"]</p>
+                        <p class="price">Giá bán: @Libs.sCurrency(Convert.ToDecimal(item["SalePrice"]))₫</p>
+                        @if (!String.IsNullOrEmpty(@item["Promotion"].ToString()))
+                        {
+                        <p><strong class="promotion">Khuyến mại:</strong> @item["Promotion"]</p>
+                        }
+                        <p><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "350x350")))" alt="@item["MetaTitle"]" /></p>
+                        <p>@item["Brief"]</p>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="list-p cl">
+            <h3 class="title-c">Sản phẩm bán chạy</h3>
+            <div class="list">
+                @foreach (var item in ViewBag.ProductTop)
+                {
+                <div class="item tooltip">
+                    <h2><a class="title" href="/p/@(item["SEOName"]).html" title="@item["MetaTitle"]">@item["Title"]</a></h2>
+                    <div class="p-img">
+                        <div class="event">
+                        @if (!item["DiscountPercent"].ToString().Equals("0"))
+                        {
+                        <span class="pr">-@item["DiscountPercent"]%</span>
+                        }
+                        @if (item["Type"].IndexOf("GIFT") >= 0)
+                        {
+                        <span class="gift"></span>
+                        }
+                        </div>
+                        <a href="/p/@(item["SEOName"]).html" title="@item["MetaTitle"]"><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "170x153")))" alt="@item["MetaTitle"]" /></a>
+                    </div>
+                    @if (!String.IsNullOrEmpty(@item["Promotion"].ToString()))
+                    {
+                    <p><strong class="promotion">KM:</strong> @item["Promotion"]</p>
+                    }
+                    <p><span class="price">Giá bán: @Libs.sCurrency(Convert.ToDecimal(item["SalePrice"]))₫</span></p>
+                    <div class="tooltip_content">
+                        <p class="title">@item["Title"]</p>
+                        <p class="price">Giá bán: @Libs.sCurrency(Convert.ToDecimal(item["SalePrice"]))₫</p>
+                        @if (!String.IsNullOrEmpty(@item["Promotion"].ToString()))
+                        {
+                        <p><strong class="promotion">Khuyến mại:</strong> @item["Promotion"]</p>
+                        }
+                        <p><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "350x350")))" alt="@item["MetaTitle"]" /></p>
+                        <p>@item["Brief"]</p>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="list-p cl">
+            <h3 class="title-c">Sản phẩm mới</h3>
+            <div class="list">
+                @foreach (var item in ViewBag.ProductNew)
+                {
+                <div class="item tooltip">
+                    <h2><a class="title" href="/p/@(item["SEOName"]).html" title="@item["MetaTitle"]">@item["Title"]</a></h2>
+                    <div class="p-img">
+                        <div class="event">
+                        @if (!item["DiscountPercent"].ToString().Equals("0"))
+                        {
+                        <span class="pr">-@item["DiscountPercent"]%</span>
+                        }
+                        @if (item["Type"].IndexOf("GIFT") >= 0)
+                        {
+                        <span class="gift"></span>
+                        }
+                        </div>
+                        <a href="/p/@(item["SEOName"]).html" title="@item["MetaTitle"]"><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "170x153")))" alt="@item["MetaTitle"]" /></a>
+                    </div>
+                    @if (!String.IsNullOrEmpty(@item["Promotion"].ToString()))
+                    {
+                    <p><strong class="promotion">KM:</strong> @item["Promotion"]</p>
+                    }
+                    <p><span class="price">Giá bán: @Libs.sCurrency(Convert.ToDecimal(item["SalePrice"]))₫</span></p>
+                    <div class="tooltip_content">
+                        <p class="title">@item["Title"]</p>
+                        <p class="price">Giá bán: @Libs.sCurrency(Convert.ToDecimal(item["SalePrice"]))₫</p>
+                        @if (!String.IsNullOrEmpty(@item["Promotion"].ToString()))
+                        {
+                        <p><strong class="promotion">Khuyến mại:</strong> @item["Promotion"]</p>
+                        }
+                        <p><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "350x350")))" alt="@item["MetaTitle"]" /></p>
+                        <p>@item["Brief"]</p>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!-- end ch1 -->
+    <div class="ch2 cl ch2-home">
+        <div class="news-h b1">
+            <h3>Bình luận mới nhất</h3>
+            <ul>
+                @foreach (var item in ViewBag.ProductNewComment)
+                {
+                <li><a title="@item["MetaTitle"]" href="p/@(item["SEOName"]).html">@item["Title"]</a></li>
+                }
+            </ul>
+        </div>
+        <div class="news-h b2">
+            <h3>Hỏi & Đáp mới nhất</h3>
+            <ul>
+                @foreach (var item in ViewBag.QuestionNew)
+                {
+                <li><a title="@item["Title"]" href="hoidap/@(item["SEOName"]).html">@item["Title"]</a></li>
+                }
+            </ul>
+            <p><a title="Đặt câu hỏi và chia sẻ kinh nghiệm" rel="nofollow" href="/answer/question"><img alt="Đặt câu hỏi và chia sẻ" src="/Source/images/question.png" width="208" /></a></p>
+        </div>        
+        @if (ViewBag.Poll.Count > 0)
+        {
+        <div class="news-h poll_form b3">
+            <h3>Thăm dò ý kiến</h3>
+            <p>@ViewBag.Poll[0]["Title"]</p>
+            @for (int i = 1; i <= 10; i++)
+            {
+                if (!String.IsNullOrEmpty(ViewBag.Poll[0]["Response" + i]))
+                {
+            <p><input name="PollID-@ViewBag.Poll[0]["PollID"]" type="radio" value="@i" /> @ViewBag.Poll[0]["Response" + i]</p>
+                }
+            }
+            <p style="text-align:center;"><button class="button" type="button" id="btnPollSubmit" lang="@ViewBag.Poll[0]["PollID"]">Biểu quyết</button><button class="button" type="button" id="btnPollView" lang="@ViewBag.Poll[0]["PollID"]">Xem kết quả</button></p>
+        </div>
+        }
+        @if (!String.IsNullOrEmpty(ViewBag.ProductTags[0]["SEOTags"]))
+        {
+        <div class="tagcloud b4">
+            <h3>Từ khoá - Tags</h3>
+            @foreach (var item in ViewBag.ProductTags[0]["SEOTags"].Split(','))
+            {
+                <a rel="tag" title="@item.Trim()" href="/p/tags/@item.Trim().Replace(' ', '-')">@item.Trim()</a>
+            }
+        </div>
+        }
+    </div>
+</div>
+}

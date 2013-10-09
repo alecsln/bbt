@@ -1,0 +1,53 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home2.cshtml";
+}
+@section meta
+{
+<title>Gửi tin nhắn</title>
+<meta name="robots" content="noindex,nofollow" />
+}
+@section main
+{
+<div class="content-h cl">
+    <div class="main ch1">
+        <div class="register">
+            @if (@Request.Get("Error").Equals("0"))
+            {
+                <p class="result">Gửi tới không được để trống!</p>
+            }
+            @if (@Request.Get("Error").Equals("1"))
+            {
+                <p class="result">Nội dung không được để trống!</p>
+            }
+            <h3 class="h3-title">Gửi mail</h3>
+            <form id="frmSendMail" action="@Url.Action("SendMail")" method="post">
+                @{bool flag = ViewBag.SendMessenger == null;}
+                <p><label>Gửi tới </label><input class="text" type="text" name="txtSendTo" value="@(flag ? String.Empty : ViewBag.SendMessenger[0]["UserName"])" /></p>
+                <p><label>Gửi tới</label></th>
+                    <select name="slTypeSend" title="@(flag ? 1 : ViewBag.SendMessenger[0]["Type"])">
+                        <option value="1">Thành viên</option>
+                        <option value="0">Admin</option>
+                    </select>
+                </p>
+                <p><label>Tiêu đề </label><input class="text" type="text" name="txtTitle" value="@(flag ? String.Empty : ViewBag.SendMessenger[0]["Title"])" /></p>
+                <p><label>Nội dung </label><textarea name="txtContent" id="txtContent" rows="10"></textarea></p>
+                <p style="text-align:center;">@Html.AntiForgeryToken()<button class="button" type="submit">Gửi</button></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="ch2">
+        <p><a title="Đặt câu hỏi và chia sẻ kinh nghiệm" rel="nofollow" href="/answer/question"><img alt="Đặt câu hỏi và chia sẻ" src="/Source/images/question.png" /></a></p>
+        <div class="news-h">
+            <h3 class="h3-title">Hỏi & Đáp mới nhất</h3>
+            <ul>
+                @foreach (var item in ViewBag.QuestionNew)
+                {
+                <li><a title="@item["Title"]" href="/hoidap/@(item["SEOName"]).html">@item["Title"]</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+}

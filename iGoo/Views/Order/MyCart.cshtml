@@ -1,0 +1,59 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>Quản lý đơn hàng</title>
+<meta name="robots" content="noindex,nofollow" />
+}
+@section main
+{
+<div class="content-h cl">     
+    <div class="table-list">
+        <table>
+            <thead>
+                <th>#</th>
+                <th>Mã đơn hàng</th>
+                <th>Người nhận</th>
+                <th>Tổng tiền</th>
+                <th>Thời gian đặt hàng</th>
+                <th>Trạng thái</th>
+            </thead>
+            <tbody>
+                @{int count = 0;}
+                @foreach (var item in ViewBag.Order)
+                {
+                    count += 1;
+                <tr>
+                    <td>@count</td>
+                    <td class="subject">
+                        <a target="_blank" class="actionEdit" href="/Order/bill?ID=@item["OrderID"]">@item["OrderCode"]</a>
+                    </td>
+                    <td>@item["FullName"]</td>
+                    <td>@item["TotalPrice"]</td>
+                    <td>@item["Created"]</td>
+                    <td>
+                        <select class="change" name="slStatus-@count" title="@item["Status"]" disabled="disabled" >
+                            <option value="0">Chờ xử lý</option>
+                            <option value="1">Xác nhận</option>
+                            <option value="2">Hoàn tất</option>
+                            <option value="3">Hoàn lại</option>
+                            <option value="4">Huỷ bỏ</option>
+                        </select>
+                    </td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <th>#</th>
+                <th>Mã đơn hàng</th>
+                <th>Người nhận</th>
+                <th>Tổng tiền</th>
+                <th>Thời gian đặt hàng</th>
+                <th>Trạng thái</th>
+            </tfoot>
+        </table>
+    </div>
+</div>
+}

@@ -1,0 +1,102 @@
+﻿@using iGoo.Helpers
+
+@{
+    Layout = "~/Areas/Webcms/Views/Shared/Layout.cshtml";
+}
+
+@section head
+{
+
+<script src="@Url.Content("~/Script/jquery.validate.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        ActionForm('@Url.Action(String.Empty)');
+        CheckAllPermission();
+        SearchForm();
+    });
+</script>
+
+}
+
+@section content
+{
+        <div class="box-content">
+
+			<div class="content-left">
+                <div class="title">
+                    <img src="@Url.Content("~/Source/webcms/images/home.png")" />
+                    <span>Quản lý nhóm quyền</span>
+                    <button type="button" onclick="history.back(-1);">Quay lại</button>
+                </div>
+                <!-- End title -->
+                <form id="frmList">
+                <div class="list">
+                    @if (@Request.Get("result").Equals("1"))
+                    {
+                        <p class="result">Cập nhật thành công!</p>
+                    }
+                    @if (@Request.Get("error").Equals("1"))
+                    {
+                    <p class="error">Có lỗi, xin hãy kiểm tra và thử lại!</p>
+                    }
+                    <div class="page">
+                        <div class="action">
+                            <button type="button" id="btnActionUpdatePermission">Cập nhật</button>
+                        </div>
+                    </div>
+                    <!-- End page -->
+                    <div class="table-list">
+                        <table>
+                            <thead>
+                                <th>#</th>
+                                <th>Tên chức năng</th>
+                                @foreach (var item2 in ViewBag.Permission)
+                                {
+                                <th>
+                                    @item2["Name"]
+                                    <input type="hidden" name="hPermission" value="@item2["Value"]" />
+                                </th>
+                                }
+                            </thead>
+                            <tbody>
+                                @{int count = 0;}
+                                @foreach (var item in ViewBag.Module)
+                                {
+                                    count += 1;
+                                <tr>
+                                    <td>@count</td>
+                                    <td class="title">@item["Name"]<input type="hidden" name="hID" value="@item["ModuleID"]" /></td>
+                                    @foreach (var item2 in ViewBag.Permission)
+                                    {
+                                    <td><input id="ckPermission" name="@(item2["Value"] + "_" + item["ModuleID"])" lang="@(item2["Value"] + "_" + item["ParentID"])" type="checkbox" value="@item2["Value"]" title="@item["Permission"]"/></td>
+                                    }
+                                </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <th>#</th>
+                                <th>Tên chức năng</th>
+                                @foreach (var item2 in ViewBag.Permission)
+                                {
+                                <th>@item2["Name"]</th>
+                                }
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="page">
+                        <div class="action">
+                            <input type="hidden" name="RollID" id="RollID" value="@Request.Get("ID")" />
+                            <input type="hidden" name="returnUrl" id="returnUrl" value="@Request.Query(string.Empty)" />
+                            <button type="button" id="btnActionUpdatePermission">Cập nhật</button>
+                        </div>
+                    </div>
+                    <!-- End page -->
+                </div>
+                <!-- End list -->
+                </form>
+            </div>
+            <!-- End box1 -->
+            </form>
+        </div>
+        <!-- End content -->
+                                }

@@ -1,0 +1,39 @@
+﻿@using iGoo.Helpers
+
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>Tìm kiếm: @Request.Get("key")</title>
+<meta name="robots" content="noindex,nofollow" />
+}
+@section main
+{
+<div class="left">
+    <div class="menu-l">
+    <h3 class="h3-title">Tuts & Tips Google</h3>
+        @if (ViewBag.MenuLeft.Count != 0)
+        {
+        <ul>
+            @foreach (var item in ViewBag.MenuLeft)
+            {
+                if (String.IsNullOrEmpty(item["UrlLink"].ToString()))
+                {
+                    <li><a title="@item["MetaTitle"]" href="@(Url.Content("~/" + item["SEOName"] + ""))">@item["Name"]</a></li>
+                }
+                else
+                {
+                    <li><a title="@item["MetaTitle"]" href="@(item["UrlLink"])">@item["Name"]</a></li>
+                }
+            }
+        </ul>
+        }
+    </div>
+</div>
+<!-- end left -->
+<div class="main f">
+    <h1 class="title-c">Tìm kiếm: <a title="@Request.Get("key")" href="search?key=@Request.Get("key")">@Request.Get("key")</a></h1>
+    <iframe id="ifSearch" src="http://www.google.com/cse?q=@Request.Get("key")&option=googlesearch&ie=UTF-8&oe=UTF-8&cof=FORID%3A11&cx=008960871992632173955:2wzp75jella&hl=vi&as_occt=http://igoo.vn&sitesearch=http://igoo.vn&ad=w9&num=10" style="width: 100%; height: 1000px; border: 0;"></iframe>
+</div>
+}

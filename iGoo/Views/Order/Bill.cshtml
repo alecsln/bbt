@@ -1,0 +1,84 @@
+﻿ @using iGoo.Helpers
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="/source/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+<meta http-equiv="content-language" content="vi" />
+<title>Đơn hàng</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="stylesheet" type="text/css" href="/Source/images/styles.css" />
+<html>
+<body>
+    <div class="main">
+        <div class="bill_info"
+            <p><label>Mã đơn hàng: </label>@ViewBag.Edit[0]["OrderCode"]</p>
+            <p><label>Trạng thái: </label> Đã gửi</p> 
+            <p><label>Hình thước thanh toán: </label> Thanh toán tại cửa hàng</p>
+            <p><label>Ngày tạo</label>@ViewBag.Edit[0]["Created"]</p>
+            <p><label>Ngày gửi</label>@ViewBag.Edit[0]["OrderSend"]</p>
+        </div>
+        <div class="bill_from">
+            <p><label>Người mua hàng</label>@ViewBag.Edit[0]["FullNameTo"]</p>
+            <p><label>Địa chỉ</label>@ViewBag.Edit[0]["AddressTo"]</p>
+            <p><label>Email</label>@ViewBag.Edit[0]["EmailTo"]</p>
+            <p><label>Số điện thoại</label>@ViewBag.Edit[0]["PhoneTo"]</p>
+            <p><label>Yêu cầu thêm</label>@ViewBag.Edit[0]["Request"]</p>
+        </div>
+        <div class="bill_to">
+            <p><label>Người nhận hàng</label>@ViewBag.Edit[0]["FullName"]</p>
+            <p><label>Địa chỉ</label>@ViewBag.Edit[0]["Address"]</p>
+            <p><label>Email</label>@ViewBag.Edit[0]["Email"]</p>
+            <p><label>Số điện thoại</label>@ViewBag.Edit[0]["Phone"]</p>
+        </div>
+        
+        <div class="table-list">
+            <table>
+                <thead>
+                    <th>#</th>
+                    <th>Mã sản phẩm</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá sản phẩm (VNĐ)</th>
+                    <th>Thành tiền</th>
+                </thead>
+                <tbody>
+                    @{int count = 0;}
+                    @foreach (var item in ViewBag.OrderDetails)
+                    {
+                        count += 1;
+                    <tr>
+                        <td>@count</td>
+                        <td class="subject">
+                            <span>@item["SKU"] (<i>@item["ProductType"]</i>)</span>
+                        </td>
+                        <td>@item["Title"]</td>
+                        <td>@item["Quantity"]</td>
+                        <td>@item["Price"]</td>
+                        <td>@item["Cash"]</td>
+                    </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <th>#</th>
+                    <th>Mã sản phẩm</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá sản phẩm (VNĐ)</th>
+                    <th>Thành tiền</th>
+                </tfoot>
+            </table>
+        </div>
+        <div>
+            <div class="bill_total">
+                <p><label>Thuế: </label>@ViewBag.Edit[0]["Tax"] %</p>
+                <p><label>TransportFee: </label>@ViewBag.Edit[0]["TransportFee"] VND</p>
+                <p><label>Discount: </label>@ViewBag.Edit[0]["Discount"] VND</p>
+                <p><label>Mã khuyến mại: </label>@ViewBag.Edit[0]["Voucher"]</p>
+                <p><label>Tổng giá trị đơn hàng: </label>@ViewBag.Edit[0]["TotalPrice"]</p>
+                <p><label>Số tiền phải thanh toán: </label>@ViewBag.Edit[0]["Cash"] VND</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

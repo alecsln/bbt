@@ -1,0 +1,10 @@
+﻿@using iGoo.Helpers;
+@{Response.ContentType = "text/xml";}
+<?xml version="1.0" encoding="UTF-8"?><urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url>
+    <loc>http://@Libs.sApp("Domain")</loc>
+    <changefreq>always</changefreq>
+    <priority>1.00</priority></url>@if(!String.IsNullOrEmpty(ViewBag.Website[0]["SEOSitemap"])){String[] sitemap = ViewBag.Website[0]["SEOSitemap"].Replace("\n", ";").Split(';');foreach (var item in sitemap)
+{
+<url>    <loc>@item</loc>
+</url>
+}}</urlset>

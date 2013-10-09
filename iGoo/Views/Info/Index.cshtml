@@ -1,0 +1,81 @@
+﻿@using iGoo.Helpers
+@using System.Text.RegularExpressions;
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>Quản lý thông tin cá nhân</title>
+<meta name="robots" content="noindex,nofollow" />
+}
+@section head
+{
+<script type="text/javascript" src="/Script/jquery.validate.js"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        $("#frmChange").validate({
+            errorPlacement: function (error, element) { },
+            rules: {
+                txtFullName: "required",
+                txtGoogleID: "required",
+                txtUserName: "required"
+            }
+        });
+
+        $("#frmChangePass").validate({
+            errorPlacement: function (error, element) { },
+            rules: {
+                txtPassword: "required",
+                txtPasswordNew: "required",
+                txtRePasswordNew: { equalTo: "#txtPasswordNew" }
+            }
+        });
+    });
+</script>
+}
+@section main
+{
+<div class="content-h action cl">
+    <div class="register">
+        <form id="frmChange" action="@Url.Action("ChangeConfig")" method="post">
+            <h3 class="h3-title">Quản lý ứng dụng</h3>
+            @if (@Request.Get("UpdateResult").Equals("1"))
+            {
+                <p class="result">Cập nhật thành công!</p>
+            }
+            @if (@Request.Get("UpdateError").Equals("1"))
+            {
+            <p class="error">Có lỗi, xin nhập đúng thông tin và thử lại!</p>
+            }
+            <p><label>Họ tên </label><input class="text" type="text" name="txtFullName" value="@ViewBag.Info[0]["FullName"]" /></p>
+            <p><label>Email </label><input class="text" type="text" name="txtEmail" value="@ViewBag.Info[0]["Email"]" readonly="readonly" /></p>
+            <p><label>Sinh nhật </label><input class="text" type="text" name="txtBrithday" value="@ViewBag.Info[0]["Brithday"]" /></p>
+            <p><label>Số điện thoại </label><input class="text" type="text" name="txtPhone" value="@ViewBag.Info[0]["Phone"]" /></p>
+            <p><label>Địa chỉ </label><input class="text" type="text" name="txtAddress" value="@ViewBag.Info[0]["Address"]" /></p>
+            <p><label>Google ID </label><input class="text" type="text" name="txtGoogleID" value="@ViewBag.Info[0]["GoogleID"]" /></p>
+            <p><label></label><a target="_blank" href="http://igoo.vn/googleplus">Hướng dẫn xác định mã Google ID</a></p>
+            <p><label>Chữ ký</label><input class="text" type="text" name="txtSignature" value="@ViewBag.Info[0]["Signature"]" /></p>
+            <p><label></label>@Html.Raw(ViewBag.Info[0]["Signature"].ToString())</p>
+            <p style="text-align:center;"><button class="button" type="submit">Cập nhật</button></p>
+        </form>
+    </div>
+        
+    <div class="login">
+        <form id="frmChangePass" action="@Url.Action("ChangePass")" method="post">
+            <h3 class="h3-title">Thay đổi mật khẩu</h3>
+            @if (@Request.Get("changePassResult").Equals("1"))
+            {
+                <p class="result">Thay đổi mật khẩu thành công!</p>
+            }
+            @if (@Request.Get("changePassError").Equals("1"))
+            {
+            <p class="error">Mật khẩu cũ không đúng!</p>
+            }
+            <p><label>Mật khẩu cũ </label><input class="text" type="password" name="txtPassword" /></p>
+            <p><label>Mật khẩu </label><input class="text" type="password" name="txtPasswordNew" id="txtPasswordNew" /></p>
+            <p><label>Nhập lại </label><input class="text" type="password" name="txtRePasswordNew" /></p>
+            <p style="text-align:center;"><button class="button" type="submit">Đổi mật khẩu</button></p>
+        </form>
+    </div>
+</div>
+}

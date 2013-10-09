@@ -1,0 +1,71 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home2.cshtml";
+}
+@section meta
+{
+<title>Thông báo</title>
+<meta name="robots" content="noindex,nofollow" />
+}
+
+@section main
+{
+<div class="content-h cl">
+    <div class="main ch1">
+        <h3 class="title-c">Phản hồi mới nhất</h3>
+        <div class="notifi">
+        @foreach (var item in ViewBag.Notification)
+        {
+            if ("0".Equals(item["Type"]))
+            {
+            <p><a target="_blank" @Html.Raw("1".Equals(item["Notifi"]) ? "class=\"bold\"" : "") href="/@(item["SEOName"]).html">@item["Title"]</a></p>
+            }
+            else if ("1".Equals(item["Type"]))
+            {
+            <p><a target="_blank" @Html.Raw("1".Equals(item["Notifi"]) ? "class=\"bold\"" : "") href="/p/@(item["SEOName"]).html">@item["Title"]</a></p>
+            }
+            else
+            {
+            <p><a target="_blank" @Html.Raw("1".Equals(item["Notifi"]) ? "class=\"bold\"" : "") href="/hoidap/@(item["SEOName"]).html">@item["Title"]</a></p>
+            }
+        }
+        </div>
+
+
+        @{
+            int space = 5, a, b;
+            int p = Convert.ToInt32(ViewBag.TotalPages);
+            int c = Convert.ToInt32(ViewBag.CategoryPage);
+            if (c > space) { a = c - space; } else { a = 1; }
+            if (c + space > p) { b = p; } else { b = c + space; }
+        }
+        <div class="page cl">
+            <span>Trang @ViewBag.CategoryPage / @ViewBag.TotalPages</span>
+            @for (int i = a; i <= b; i++)
+            {
+                if (i == c)
+                {
+                <a class="page-c" title="Trang @(i.ToString())" href="/info/notification/@i.ToString()">@i.ToString()</a>
+                }
+                else
+                {
+                <a title="Trang @(i.ToString())" href="/info/notification/@i.ToString()">@i.ToString()</a>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="ch2">
+        <p><a title="Đặt câu hỏi và chia sẻ kinh nghiệm" rel="nofollow" href="/answer/question"><img alt="Đặt câu hỏi và chia sẻ" src="/Source/images/question.png" width="208" /></a></p>
+        <div class="news-h">
+            <h3 class="h3-title">Hỏi & Đáp mới nhất</h3>
+            <ul>
+                @foreach (var item in ViewBag.QuestionNew)
+                {
+                <li><a title="@item["Title"]" href="/hoidap/@(item["SEOName"]).html">@item["Title"]</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+}

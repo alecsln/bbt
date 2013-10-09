@@ -1,0 +1,100 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>Đăng nhập & Đăng ký tài khoản</title>
+<meta name="description" content="Đăng nhập & Đăng ký tài khoản: @ViewBag.Website[0]["MetaDescription"]" />
+<meta name="robots" content="noindex,nofollow" />
+}
+@section head
+{
+<script type="text/javascript" src="/Script/jquery.validate.js"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        //Validate form
+        $("#frmLogin").validate({
+            errorPlacement: function (error, element) { },
+            rules: {
+                txtPassword: "required",
+                txtEmail: "required"
+            }
+        });
+
+        $("#frmRegister").validate({
+            errorPlacement: function (error, element) { },
+            rules: {
+                txtUserName: {
+                    required: true,
+                    minlength: 2,
+                    remote: "CheckUserName"
+                },
+                txtEmail: {
+                    required: true,
+                    remote: "CheckEmail"
+                },
+                txtFullName: "required",
+                txtPassword: "required",
+                txtRePassword: { equalTo: "#txtPassword" }
+            },
+            submitHandler: function (form) {
+                if (!this.wasSent) {
+                    this.wasSent = true;
+                    $submit = $(':submit', form);
+                    $submit.attr('disabled', 'disabled');
+                    $submit.text("Đang xử lý!");
+                    form.submit();
+                } else {
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+}
+@section main
+{
+<div class="content-h action cl">
+    <div class="register">
+        <h3 class="h3-title">Đăng ký tài khoản</h3>
+        <form id="frmRegister" action="@Url.Action("Register")" method="post">
+            @if (@Request.Get("registerResult").Equals("1"))
+            {
+                <p class="result">Đăng ký thành công, hãy đăng nhập để quản lý ứng dụng!</p>
+            }
+            @if (@Request.Get("registerError").Equals("1"))
+            {
+            <p class="error">Nick name, Email đã được sử dụng, hãy thử lại!</p>
+            }
+            <p><label>Tài khoản </label><input class="text" type="text" name="txtUserName" /></p>
+            <p><label>Email </label><input class="text" type="text" name="txtEmail" /></p>
+            <p><label>Mật khẩu </label><input class="text" type="password" name="txtPassword" id="txtPassword" /></p>
+            <p><label>Nhập lại </label><input class="text" type="password" name="txtRePassword" /></p>
+            <p><label>Họ tên </label><input class="text" type="text" name="txtFullName" /></p>
+            <p><label>Số điện thoại </label><input class="text" type="text" name="txtPhone" /></p>
+            <p><label>Địa chỉ </label><input class="text" type="text" name="txtAddress" /></p>
+            <p style="text-align:center;">@Html.AntiForgeryToken()<button class="button" type="submit">Đăng ký</button></p>
+        </form>
+        
+        <div class="r">
+            <h3 class="h3-title">Quy định sử dụng</h3>
+            @Html.Raw(ViewBag.StaticTerm[0]["Description"])
+        </div>
+    </div>
+        
+	<div class="login">
+        <form id="frmLogin" action="@Url.Action("CheckLogin")" method="post">
+            <h3 class="h3-title">Đăng nhập</h3>
+            @if (@Request.Get("loginError").Equals("1"))
+            {
+            <p class="error">Email hoặc mật khẩu không đúng! </p>
+            }
+            <p><label>Email </label><input class="text" type="text" name="txtEmail" value="tataxa206@gmail.com" /></p>
+            <p><label>Mật khẩu </label><input class="text" type="password" name="txtPassword" value="conchocon" /></p>
+            <p style="text-align:right;"><button class="button" type="submit">Đăng nhập</button></p>
+            <p style="text-align:right;"><a title="Lấy lại mật khẩu" href="forgot">Quên mật khẩu?</a></p>
+        </form>
+    </div>
+</div>
+}

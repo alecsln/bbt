@@ -1,0 +1,95 @@
+﻿@using iGoo.Helpers
+
+@{
+    Layout = "~/Areas/Webcms/Views/Shared/Layout.cshtml";
+}
+
+@section head
+{
+
+<script src="@Url.Content("~/Script/jquery.validate.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        ActionForm('@Url.Action(String.Empty)');
+        SearchForm();
+    });
+</script>
+
+}
+
+@section content
+{
+        <div class="box-content">
+
+			<div class="content-left">
+                <div class="title">
+                    <img src="@Url.Content("~/Source/webcms/images/home.png")" />
+                    <span>Quản lý nhóm quyền</span>
+                    <button type="button" onclick="history.back(-1);">Quay lại</button>
+                </div>
+                <!-- End title -->
+                <form id="frmList">
+                <div class="list">
+                    @if (@Request.Get("result").Equals("1"))
+                    {
+                        <p class="result">Cập nhật thành công!</p>
+                    }
+                    @if (@Request.Get("error").Equals("1"))
+                    {
+                    <p class="error">Có lỗi, xin hãy kiểm tra và thử lại!</p>
+                    }
+                    <div class="page">
+                        <div class="action">
+                            <button type="button" id="btnActionUpdatePermission">Cập nhật</button>
+                        </div>
+                    </div>
+                    <!-- End page -->
+                    <div class="table-list">
+                        <table>
+                            <thead>
+                                <th>#</th>
+                                <th style="width:30px;"><input type="checkbox" value="ckAll" id="ckCheckAll" /></th>
+                                <th>Nhóm quyền</th>
+                                <th>Mô tả</th>
+                            </thead>
+                            <tbody>
+                                @{int count = 0;}
+                                @foreach (var item in ViewBag.Roll)
+                                {
+                                    count += 1;
+                                <tr>
+                                    <td>@count</td>
+                                    <td>
+                                        <input type="checkbox" title="ckAll,@(item["Checked"] == null ? String.Empty : item["Checked"])" name="ckID-@item["RollID"]" value="@item["RollID"]" />
+                                        <input type="hidden" name="hID" value="@item["RollID"]" />   
+                                    </td>
+                                    <td class="title">@item["Name"]</td>
+                                    <td style="text-align:left;">@item["Description"]</td>
+                                </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <th>#</th>
+                                <th style="width:30px;"><input type="checkbox" value="ckAll" id="ckCheckAll" /></th>
+                                <th>Nhóm quyền</th>
+                                <th>Mô tả</th>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="page">
+                        <div class="action">
+                            <input type="hidden" name="UserID" id="UserID" value="@Request.Get("ID")" />
+                            <input type="hidden" name="returnUrl" id="returnUrl" value="@Request.Query(string.Empty)" />
+                            <button type="button" id="btnActionUpdatePermission">Cập nhật</button>
+                        </div>
+                    </div>
+                    <!-- End page -->
+                </div>
+                <!-- End list -->
+                </form>
+            </div>
+            <!-- End box1 -->
+            </form>
+        </div>
+        <!-- End content -->
+                                }

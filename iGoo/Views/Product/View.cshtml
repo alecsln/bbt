@@ -1,0 +1,260 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>@ViewBag.Product[0]["MetaTitle"]</title>
+@if(!String.IsNullOrEmpty(ViewBag.Product[0]["MetaDescription"].ToString()))
+{
+<meta name="description" content="@ViewBag.Product[0]["MetaDescription"]" />
+}
+else
+{
+<meta name="description" content="@Convert.ToString((string)ViewBag.Product[0]["Brief"]).Truncate(160)" />
+}    
+<meta name="keywords" content="@ViewBag.Product[0]["MetaKeyword"]" />
+<link rel="canonical" href="http://@Libs.sApp("Domain")/p/@(Html.Raw(ViewBag.Product[0]["SEOName"])).html" />
+<meta itemprop="image" content="http://@Libs.sApp("Domain")/uploads/@ViewBag.Product[0]["Image"]" />
+<meta property="og:image" content="http://@Libs.sApp("Domain")/uploads/@ViewBag.Product[0]["Image"]" />
+}
+@section head
+{
+<link rel="stylesheet" type="text/css" href="/Source/images/cloud-zoom.css" />
+<script type="text/javascript" src="/Script/cloud-zoom.js"></script>
+
+<link href="/Script/colorbox/colorbox.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/Script/colorbox/jquery.colorbox.js"></script>
+
+<script type="text/javascript" src="/Script/jquery.tooltip.js"></script>
+
+<script type="text/javascript">
+    $().ready(function () {
+
+        $(".cloud-zoom-gallery").colorbox({rel:'cloud-zoom-gallery',width:"75%", height:"75%"});
+        
+        //Add Comment
+        $('button[id="btnComment"]').click(function () {
+            $(this).text("Đang xử lý!");
+            var id = "@ViewBag.Product[0]["ProductID"]";
+            var txtComment =  $('#txtComment').val();
+            var __RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            $.post("@Url.Action("AddComment")", {ProductID: id, txtComment: txtComment,__RequestVerificationToken:__RequestVerificationToken},
+            function (data) {
+                $('.send-c').html(data);
+            });
+        });
+
+        $(".tooltip").tooltip({
+            bodyHandler: function () {
+                return $(this).children(".tooltip_content").html()
+            },
+            track: true,
+            showURL: false
+        });
+
+    });
+
+    function Spam(id)
+    {
+        if(confirm("Bạn hãy chắc chắn bài viết này vi phạm?"))
+        {
+            var __RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            $.post("@Url.Action("AddSpam")", {CommentID: id, __RequestVerificationToken:__RequestVerificationToken},
+            function (data) {
+                if(data=="True")
+                {
+                    alert("Cảm ơn bạn! Chúng tôi sẽ kiểm tra câu hỏi này");
+                    $('.'+id).slideUp();
+                }
+                else
+                    alert("Đăng nhập hoặc Đăng ký ngay để báo spam!");
+            });
+        }
+    }
+</script>
+}
+
+@section main
+{
+<div class="content-h cl">
+    <div class="title-c cl nv">
+        <a rel="nofollow" title="Trang chủ" href="/"><spam>Trang chủ</span></a><span class="fl">&raquo;</span>
+        <h2><a itemscope itemtype="http://data-vocabulary.org/Breadcrumb" itemprop="url" title="@ViewBag.Product[0]["CateMetaTitle"]" href="@(ViewBag.Product[0]["CateSEOName"])"><span itemprop="title">@ViewBag.Product[0]["CateName"]</span></a></h2>
+    </div>
+    <div class="product-v">
+        @foreach (var item in ViewBag.Product)
+        {
+        <div class="cl">
+            <div class="p-image">
+                <div class="p-zoom">
+                    <a href="/uploads/@item["Image"]" class="cloud-zoom" id="zoom1" rel="adjustX: 10, adjustY:-4"><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "300x300")))" alt="@item["MetaTitle"]" alt="@item["MetaTitle"]" /></a>
+                </div>
+                @{String[] imgs = item["SlideImage"].ToString().Replace("\n", ";").Split(';');}
+                <div class="p-thumb">
+                    <ul>
+                        <li><a class="cloud-zoom-gallery" href="/uploads/@item["Image"]" rel="useZoom: 'zoom1', smallImage: '@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "300x300")))'"><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "50x50")))" width="50" height="50" alt="@item["MetaTitle"]" /></a></li>
+                        @if ((imgs.Length % 2) == 0)
+                        {
+                            for (int i = 0; i < imgs.Length; i += 2)
+                            {
+                        <li><a title="@imgs[i]" class="cloud-zoom-gallery" href="/uploads/@imgs[i + 1]" rel="useZoom: 'zoom1', smallImage: '@(Url.Content("~/thumb/" + Libs.ThumbName(imgs[i + 1].Trim(), "300x300")))'"><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(imgs[i + 1].Trim(), "50x50")))" width="50" height="50" alt="@imgs[i]" /></a></li>
+                            }
+                        }
+                    </ul>
+                </div>
+
+            </div>
+            <div class="p-info">
+                <h1 class="h1-t">@item["Title"]</h1>
+                <p class="price">Giá Hà Nội: @Libs.sCurrency(Convert.ToDecimal(item["SalePrice"])) VNĐ</p> 
+                <p style="font-weight:bold;">Giá HCM: @Libs.sCurrency(Convert.ToDecimal(item["ImportPrice"])) VNĐ</p>                   
+                <p>Mã sản phẩm: <strong>@item["SKU"]</strong></p>
+                <div class="p-brief">
+                    <p>@Html.Raw(item["Brief"].ToString().Replace("\n", "<br />"))</p>
+                </div>
+                <div class="p-promotion">
+                    @if (!String.IsNullOrEmpty(@item["Promotion"].ToString()))
+                    {
+                    <p><strong class="promotion">Khuyến mại:</strong> @item["Promotion"]</p>
+                    }
+                </div>
+                <div class="p-action">
+                    <p>
+                        <a rel="nofollow" href="javascript:addToCartRedirect('@item["ProductID"]',1,'')" title="Đặt mua hàng">Đặt hàng ngay</a>
+                        <a rel="nofollow" href="javascript:addToShoppingCart('@item["ProductID"]',1,'')" title="Thêm vào giỏ hàng">Thêm vào giỏ hàng</a>
+                        <a rel="nofollow" href="javascript:addToViewHistory('@item["ProductID"]')" title="Lưu sản phẩm">Lưu sản phẩm</a>
+                    </p>
+                    <p>
+                        <a target="_blank" rel="nofollow" href="/answer/question" title="Hỏi về sản phẩm">Hỏi về sản phẩm</a>
+                        <a target="_blank" href="/hướng-dẫn-mua-hàng" title="Hướng dẫn mua hàng">Hướng dẫn</a>
+                        <a target="_blank" rel="nofollow" href="/contact" title="Góp ý">Góp ý</a>
+                    </p>
+                </div>
+                <div class="p-support">
+                    <h3 class="h3-title">Hỗ trợ mua hàng</h3>
+                    @Html.Raw(ViewBag.StaticProductSupport[0]["Description"])
+                </div>
+            </div>
+        </div>
+               if (!String.IsNullOrEmpty(item["Content"].ToString()))
+               {
+        <div class="p-content">
+            <h3 class="h3-title">Mô tả sản phẩm</h3>
+            <p>@Html.Raw(item["Content"])</p>
+        </div>
+               }
+        }
+    </div>
+
+    @if (ViewBag.ProductOther.Count > 0)
+    {
+    <div class="list-p cl">
+        <h3 class="h3-title">Sản phẩm khác</h3>
+        @foreach (var item in ViewBag.ProductOther)
+        {
+        <div class="item tooltip">
+            <h2><a class="title" href="/p/@(item["SEOName"]).html" title="@item["MetaTitle"]">@item["Title"]</a></h2>
+            <div class="p-img">
+                <div class="event">
+                @if (!item["DiscountPercent"].ToString().Equals("0"))
+                {
+                <span class="pr">-@item["DiscountPercent"]%</span>
+                }
+                @if (item["Type"].IndexOf("GIFT") >= 0)
+                {
+                <span class="gift"></span>
+                }
+                </div>
+                <a href="/p/@(item["SEOName"]).html" title="@item["MetaTitle"]"><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "170x153")))" alt="@item["MetaTitle"]" /></a>
+            </div>
+            @if (!String.IsNullOrEmpty(@item["Promotion"].ToString()))
+            {
+            <p><strong class="promotion">KM:</strong> @item["Promotion"]</p>
+            }
+            <p><span>Mã: @item["SKU"]</span> | <span class="price">@Libs.sCurrency(Convert.ToDecimal(item["SalePrice"])) VNĐ</span></p>
+            <div class="tooltip_content">
+                <p class="title">@item["Title"]</p>
+                <p class="price">Giá bán: @Libs.sCurrency(Convert.ToDecimal(item["SalePrice"])) VNĐ</p>
+                @if (!String.IsNullOrEmpty(@item["Promotion"].ToString()))
+                {
+                <p><strong class="promotion">Khuyến mại:</strong> @item["Promotion"]</p>
+                }
+                <p><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "350x350")))" alt="@item["MetaTitle"]" /></p>
+                <p>@item["Brief"]</p>
+            </div>
+        </div>
+        }
+    </div>
+    }
+
+    <div class="news-t">
+        <h3 class="h3-title">Chia sẻ</h3>
+        <input class="text" style="width:450px; float:right;" onclick="this.select();" type="text" value="http://@Libs.sApp("Domain")/p/@(ViewBag.Product[0]["SEOName"]).html" />
+        <!-- AddThis Button BEGIN -->
+        <div style="padding-top:7px;">
+            <div class="addthis_toolbox addthis_default_style ">
+            <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+            <a class="addthis_button_tweet"></a>
+            <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+            <a class="addthis_counter addthis_pill_style"></a>
+            </div>
+            <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-4f838fd33a474624"></script>
+            <!-- AddThis Button END -->
+        </div>
+    </div>
+    
+    @if (!String.IsNullOrEmpty(ViewBag.Product[0]["Tags"].ToString()))
+    {
+    <div class="news-t cl atag">
+        <h3 class="h3-title">Từ khoá - Tags</h3>
+        @foreach (var item in ViewBag.Product[0]["Tags"].ToString().Split(','))
+        {
+			<a rel="tag" title="@item.Trim()" href="/tags/@item.Trim().Replace(' ', '-')">@item.Trim()</a>
+        }
+        
+        @foreach (var item in ViewBag.Product[0]["TagsTitle"].ToString().Split(','))
+        {
+			<a title="@item.Trim()" href="@(@ViewBag.Product[0]["SEOName"]).html">@item.Trim()</a>
+        }
+    </div>
+    }
+
+    <div class="comment-c" itemscope itemtype="http://data-vocabulary.org/Review-aggregate">
+        <h3 class="h3-title">Bình luận (<span itemprop="count">@ViewBag.Product[0]["TotalComment"]</span>)</h3>
+        @foreach (var item in ViewBag.Comment)
+        {
+        <div class="l @item["CommentID"]">
+            <a title="Trang cá nhân G+ của @item["FullName"]" target="_blank" href="/u/@item["UserName"]"><img class="a"  alt="Ảnh cá nhân của item["FullName"]" src="@("".Equals(item["Image"].ToString()) ? Url.Content("~/Source/images/avatar.jpg") : item["Image"].ToString())" /></a>
+            <p class="t"><a rel="nofollow" title="Trang cá nhân G+ của @item["FullName"]" target="_blank" href="/u/@item["UserName"]">@(item["FullName"])</a></p>
+            <p>@(Libs.ToPrettyDate(Convert.ToDateTime(item["Created"])))</p>
+            <div class="r">
+                <p><g:plusone size="small"></g:plusone></p>
+                <p><a href="javascript:Spam('@item["CommentID"]');">Báo Spam</a></p>
+            </div>
+            <div class="d" id="C-@item["CommentID"]">
+                @item["Content"]
+           </div>
+           @if (!"".Equals(item["Signature"].ToString()))
+           {
+            <p class="s">@Html.Raw(item["Signature"].ToString())</p>
+           }
+        </div>
+        }
+
+        <div class="send-c">
+            <h3 class="h3-title">Gửi bình luận của bạn</h3>
+            @Html.AntiForgeryToken()
+            @if (Session["MemberID"] != null)
+            {
+            <textarea id="txtComment" class="text" rows="8"></textarea>
+            <p class="b"><button type="button" class="button" id="btnComment">Gửi bình luận</button> Nội dung > 20 ký tự!</p>
+            }
+            else
+            {
+                <p><a rel="nofollow" href="/info/login">Đăng nhập</a> hoặc <a rel="nofollow" href="/info/login">Đăng ký</a> ngay để đăng nhận xét!</p>
+            }
+        </div>
+    </div>
+</div>
+}

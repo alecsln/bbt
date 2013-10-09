@@ -1,0 +1,22 @@
+﻿@using iGoo.Helpers
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="/source/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+<meta http-equiv="content-language" content="vi" />
+<title>@ViewBag.Website[0]["MetaTitle"] | Sitemap Product</title>
+<meta name="description" content="Sitemap Product: @ViewBag.Website[0]["MetaDescription"]" />
+<meta name='revisit-after' content='1 days' />
+<link rel="canonical" href="http://@Libs.sApp("Domain")/sitemap/product" />
+<style>
+    a{display:block; padding:2px 5px;}
+</style>
+</head>
+<body>
+@foreach (var item in ViewBag.SiteMap)
+{
+<a title="@item["MetaTitle"]" href="/p/@(item["SEOName"]).html">@item["Title"]</a>
+}
+</body>
+</html>

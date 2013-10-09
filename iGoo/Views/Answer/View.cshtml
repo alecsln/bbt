@@ -1,0 +1,131 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home2.cshtml";
+}
+@{String Content = Libs.BBCodeToHTML((string)@ViewBag.Question[0]["Content"]);}
+@section meta
+{
+<title>@ViewBag.Question[0]["Title"]</title>
+<meta name="description" content="@Libs.RemoveTags(Content).Truncate(160)" />
+<link rel="canonical" href="http://@Libs.sApp("Domain")/hoidap/@(Html.Raw(ViewBag.Question[0]["SEOName"])).html" />
+}
+@section head
+{
+<script type="text/javascript" src="/Script/bbeditor/ed.js"></script>
+<script type="text/javascript" src="/Script/libs_iGoo.js"></script>
+<script type="text/javascript" src="/Script/jquery.validate.js"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        //Add Comment
+        $('button[id="btnAnswer"]').click(function () {
+            $(this).text("Đang xử lý!");
+            var id = "@ViewBag.Question[0]["QuestionID"]";
+            var txtAnswer =  $('#txtAnswer').val();
+            var __RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            $.post("@Url.Action("AddAnswer")", {QuestionID: id, txtAnswer: txtAnswer,__RequestVerificationToken:__RequestVerificationToken},
+            function (data) {
+                $('.send-c').html(data);
+            });
+        });
+    });
+
+    function SpamQuestion(id)
+    {
+        if(confirm("Bạn hãy chắc chắn bài viết này vi phạm?"))
+        {
+            var __RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            $.post("@Url.Action("AddSpamQuestion")", {QuestionID: id, __RequestVerificationToken:__RequestVerificationToken},
+            function (data) {
+                if(data=="True")
+                    alert("Cảm ơn bạn! Chúng tôi sẽ kiểm tra câu hỏi này");
+                else
+                    alert("Đăng nhập hoặc Đăng ký ngay để báo spam!");
+            });
+        }
+    }
+
+    function SpamAnswer(id)
+    {
+        if(confirm("Bạn hãy chắc chắn bài viết này vi phạm?"))
+        {
+            var __RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            $.post("@Url.Action("AddSpamAnswer")", {AnswerID: id, __RequestVerificationToken:__RequestVerificationToken},
+            function (data) {
+                if(data=="True")
+                {
+                    alert("Cảm ơn bạn! Chúng tôi sẽ kiểm tra câu hỏi này");
+                    $('.'+id).slideUp();
+                }
+                else
+                    alert("Đăng nhập hoặc Đăng ký ngay để báo spam!");
+            });
+        }
+    }    
+</script>
+}
+@section main
+{
+<div class="content-h cl">
+    <div class="title-c cl nv">
+        <a itemscope itemtype="http://data-vocabulary.org/Breadcrumb" itemprop="url" title="Hỏi & Đáp Goolge Việt" href="/hoidap"><span itemprop="title">Hỏi & Đáp</span></a><span class="fl">&raquo;</span>
+        <h2><a itemscope itemtype="http://data-vocabulary.org/Breadcrumb" itemprop="url" title="@ViewBag.Question[0]["CateMetaTitle"]" href="@(ViewBag.Question[0]["CateSEOName"])"><span itemprop="title">@ViewBag.Question[0]["CateName"]</span></a></h2>
+    </div>
+    <div class="answer-v">
+        <h1><a title="@ViewBag.Question[0]["Title"]" class="h1-t" href="@(ViewBag.Question[0]["SEOName"]).html">@ViewBag.Question[0]["Title"]</a></h1>
+        <div class="e">
+            @if (Session["MemberID"] != null && Session["MemberID"].ToString().Equals(ViewBag.Question[0]["UserID"].ToString()))
+            {
+            <a href="/answer/question?id=@ViewBag.Question[0]["QuestionID"]">Sửa | </a>
+            }
+            <a href="javascript:SpamQuestion('@ViewBag.Question[0]["QuestionID"]');">Báo Spam</a>
+        </div>
+
+        <div class="u">
+            <a rel="nofollow" title="Trang cá nhân G+ của @ViewBag.Question[0]["FullName"]" target="_blank" href="/u/@ViewBag.Question[0]["UserName"]"><img class="a" alt="Ảnh cá nhân của item["FullName"]" src="@("".Equals(ViewBag.Question[0]["Image"].ToString()) ? Url.Content("~/Source/images/avatar.jpg") : ViewBag.Question[0]["Image"].ToString())" /></a>
+            <p><a rel="nofollow" class="n" target="_blank" href="/u/@ViewBag.Question[0]["UserName"]">@(ViewBag.Question[0]["FullName"])</a></p>
+            <p>@(Libs.ToPrettyDate(Convert.ToDateTime(ViewBag.Question[0]["Created"])))</p>
+        </div>
+
+        <div class="v" id="Q-@ViewBag.Question[0]["QuestionID"]">@Html.Raw(Content)</div>
+        @if (!"".Equals(ViewBag.Question[0]["Signature"].ToString()))
+        {
+        <p class="s">@Html.Raw(ViewBag.Question[0]["Signature"].ToString())</p>
+        }
+    </div>
+    <div class="comment-c" itemscope itemtype="http://data-vocabulary.org/Review-aggregate">
+        <h3 class="h3-title">Trả lời (<span itemprop="count">@ViewBag.Question[0]["TotalAnswer"]</span>)</h3>
+        @foreach (var item in ViewBag.Answer)
+        {
+        <div class="l @item["AnswerID"]">
+            <a rel="nofollow" title="Trang cá nhân G+ của @item["FullName"]" target="_blank" href="/u/@item["UserName"]"><img class="a" alt="Ảnh cá nhân của item["FullName"]" src="@("".Equals(item["Image"].ToString()) ? Url.Content("~/Source/images/avatar.jpg") : item["Image"].ToString())" /></a>
+            <p class="t"><a rel="nofollow" title="Trang cá nhân G+ của @item["FullName"]" target="_blank" href="/u/@item["UserName"]">@(item["FullName"])</a></p>
+            <p>@(Libs.ToPrettyDate(Convert.ToDateTime(item["Created"])))</p>
+            <div class="r">
+                <p><g:plusone size="small"></g:plusone></p>
+                <p><a href="javascript:SpamAnswer('@item["AnswerID"]');">Báo Spam</a></p>
+            </div>
+            <div class="d" id="A-@item["AnswerID"]">
+                @Html.Raw(Libs.BBCodeToHTML((string)@item["Content"]))
+            </div>
+            @if (!"".Equals(item["Signature"].ToString()))
+            {
+            <p class="s">@Html.Raw(item["Signature"].ToString())</p>
+            }
+        </div>
+        }
+        <div class="send-c">
+            <h3 class="h3-title">Trả lời câu hỏi???</h3>
+            @Html.AntiForgeryToken()
+            @if (Session["MemberID"] != null)
+            {
+            <textarea id="txtAnswer" class="text" rows="8"></textarea>
+            <p class="b"><button type="button" class="button" id="btnAnswer">Gửi câu trả lời</button> Nội dung > 20 ký tự!</p>
+            }
+            else
+            {
+                <p><a rel="nofollow" href="/info/login">Đăng nhập</a> hoặc <a rel="nofollow" href="/info/login">Đăng ký</a> ngay để đăng nhận xét!</p>
+            }
+        </div>
+    </div>
+</div>
+}

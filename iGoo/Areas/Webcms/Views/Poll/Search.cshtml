@@ -1,0 +1,101 @@
+﻿@using iGoo.Helpers
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>iCMS - &copy; Copyright www.dangcapweb.com</title>
+<link href="@Url.Content("~/Source/webcms/styles/styles.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Script/jquery.js")"></script> 
+<script type="text/javascript" src="@Url.Content("~/Script/libs_webcms.js")"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        loadDefault();
+        ActionForm('@Url.Action(String.Empty)');
+        SearchForm();
+
+        $('a[id="btnEdit"]').click(function () {
+            $('#btnUpload').text("Sửa");
+            $('#txtEdit').val($(this).attr("title"));
+        });
+        $('#txtKey').val(readCookie("cookieFileValue"));
+    });
+
+    function sendParent(ID) {
+        parent.$('.full').hide();
+        parent.$('.upload').hide();
+        switch (readCookie("cookieSearchBack")) {
+            case "SetPoll":
+                parent.SetPoll(ID);
+                break;
+            case "SetRelated":
+                parent.SetRelated(ID);
+                break;
+        }
+    }
+
+</script>
+</head>
+
+<body>
+    <div class="content-left f">
+        <div class="title">
+            <img src="@Url.Content("~/Source/webcms/images/home.png")" />
+            <span>Tìm kiếm</span>
+            <button type="button" onclick="history.back(-1);">Quay lại</button>
+        </div>
+        <!-- End title -->
+        <div class="search">
+            <form id="frmSearch">
+                <label>Từ khóa </label>
+                <input type="text" style="width:300px;" name="txtKey" value="@Request.Get("txtKey")" />
+                <select name="slSearchType" title="@Request.Get("slSearchType")" >
+                    <option value="0">Bình chọn</option>
+                    <option value="1">Tin tức</option>
+                    <option value="2">Sản phẩm</option>
+                </select>
+                <button type="submit">Tìm kiếm</button>
+            </form>
+        </div>
+        
+        <!-- End search -->
+        <form id="frmList">
+        <div class="list file">
+            @if (@Request.Get("result").Equals("1"))
+            {
+                <p class="result">Cập nhật thành công!</p>
+            }
+            @if (@Request.Get("error").Equals("1"))
+            {
+            <p class="error">Có lỗi, xin hãy kiểm tra và thử lại!</p>
+            }
+            <div class="table-list">
+            <table>
+                <thead>
+                    <th style="width:50px;">#</th>
+                    <th>Tiêu đề</th>
+                </thead>
+                <tbody>
+                    @{int count = 0;}
+                    @foreach (var item in ViewBag.Poll)
+                    {
+                        count += 1;
+                    <tr>
+                        <td>@count</td>
+                        <td style="text-align:left; padding:5px 0;"><a href="javascript:sendParent('@item["ID"]');" >@item["Title"]</a></td>
+                    </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <th>#</th>
+                    <th>Tiêu đề</th>
+                </tfoot>
+            </table>
+            </div>
+        </div>
+        <!-- End list -->
+        </form>
+    </div>
+    <!-- End box1 -->
+    </form>
+</body>
+</html>

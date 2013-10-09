@@ -1,0 +1,169 @@
+﻿@using iGoo.Helpers
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>iCMS - &copy; Copyright www.dangcapweb.com</title>
+<link href="@Url.Content("~/Source/webcms/styles/styles.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Script/jquery.js")"></script> 
+<script type="text/javascript" src="@Url.Content("~/Script/libs_webcms.js")"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        loadDefault();
+        ActionForm('@Url.Action(String.Empty)');
+        SearchForm();
+
+        $('a[id="btnEdit"]').click(function () {
+            $('#btnUpload').text("Sửa");
+            $('#txtEdit').val($(this).attr("title"));
+        });
+
+        $('#txtKey').val(readCookie("cookieFileValue"));
+
+        $('button[id="btnAddImage"]').click(function () {
+            $('input[title="ckID"]').each(function (index) {
+                if (this.checked) {
+                    var sName = $(this).attr("id");
+                    var sSrc = $(this).attr("lang");
+                    sendParent(sName,sSrc);
+                }
+            });
+        });
+    });
+    
+    function sendParent(sName,sSrc) {
+        parent.$('.full').hide();
+        parent.$('.upload').hide();
+        switch (readCookie("cookieFileBack")) {
+            case "ImageFile":
+                parent.ImageFile(sSrc);
+                break;
+            case "ImageList":
+                parent.ImageList(sName,sSrc);
+                break;
+            case "ImageDescription":
+                parent.ImageDescription(sName,sSrc);
+                break;
+        }
+    }
+
+</script>
+</head>
+
+<body>
+    <div class="content-left f">
+        <div class="title">
+            <img src="@Url.Content("~/Source/webcms/images/home.png")" />
+            <span>Quản lý File</span>
+            <button type="button" onclick="history.back(-1);">Quay lại</button>
+        </div>
+        <!-- End title -->
+        <div class="search">
+            <form id="frmSearch">
+                <label>Từ khóa </label>
+                <input type="text" style="width:300px;" id="txtKey" name="txtKey" value="@Request.Get("txtKey")" />
+                <select name="slSearchGroup" title="@Request.Get("slSearchGroup")" >
+                    <option value="">Nhóm</option>
+                    @foreach (var item in ViewBag.GroupName)
+                    {
+                        <option value="@item["AttributeID"]">@item["Name"]</option>
+                    }
+                </select>
+                <button type="submit">Tìm kiếm</button>
+            </form>
+            <form action="@Url.Action(String.Empty)/Upload" method="post" enctype="multipart/form-data">
+		        <input type="file" name="files" multiple>
+                <select name="slSearchGroup" title="@Request.Get("slSearchGroup")" >
+                    @foreach (var item in ViewBag.GroupName)
+                    {
+                        <option value="@item["AttributeID"]">@item["Name"]</option>
+                    }
+                </select>
+                <input id="txtEdit" type="hidden" name="txtEdit" value="" />
+		        <button id="btnUpload" type="submit">Upload!</button>
+	        </form>
+        </div>
+        
+        <!-- End search -->
+        <form id="frmList">
+        <div class="list file">
+            @if (@Request.Get("result").Equals("1"))
+            {
+                <p class="result">Cập nhật thành công!</p>
+            }
+            @if (@Request.Get("error").Equals("1"))
+            {
+            <p class="error">Có lỗi, xin hãy kiểm tra và thử lại!</p>
+            }
+            <div class="page">
+                <div class="action">
+                    <button type="button" id="btnActionDelete">Xóa</button>
+                    <button type="button" id="btnAddImage">Chọn nhiều ảnh</button>
+                </div>
+                <div class="page-list">                        
+                    <label>Show</label>
+                    <select id="show" title="@Request.Get("show")">
+                        <option title="@Request.Query("show=20&page=1")" value="20">20</option>
+                        <option title="@Request.Query("show=60&page=1")" value="60">60</option>
+                        <option title="@Request.Query("show=100&page=1")" value="100">100</option>
+                    </select>
+                    <label>Trang @(Request.IsNull("page") ? "1" : @Request.Get("page"))/@ViewBag.TotalPages</label>
+                    <select id="page" title="@Request.Get("page")">
+                        @for (int i = 1; i <= Convert.ToInt32(ViewBag.TotalPages); i++)
+                        {
+                        <option title="@(Request.Query("page=" + i))" value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <!-- End page -->
+            <div class="table-list clearfix">
+                @{int count = 0;}
+                @foreach (var item in ViewBag.File)
+                {
+                    count += 1;
+                    <div class="box">
+                        <p><a class="t" href="javascript:sendParent('@item["Name"]','@item["Src"]');" >@item["Name"]</a></p>
+                        <p><a href="javascript:sendParent('@item["Name"]','@item["Src"]');" ><img src="@Url.Content("~/Uploads/" + item["Src"])" width="100" height="100" /></a></p>
+                        <p>
+                            <input id="@item["Name"]" lang="@item["Src"]" type="checkbox" title="ckID" name="ckID-@count" value="@item["FileID"]" />
+                            <input type="hidden" name="hdSrc-@count" value="@item["Src"]" />
+                            <a id="btnEdit" href="#" title="@item["Src"]">Sửa</a>
+                        </p>
+                    </div>
+                }
+                
+            </div>
+            <div class="page">
+                <div class="action">
+                    <input type="hidden" name="count" value="@count" />
+                    <button type="button" id="btnActionDelete">Xóa</button>                    
+                    <button type="button" id="btnAddImage">Chọn nhiều ảnh</button>
+                </div>
+                <div class="page-list">                        
+                    <label>Show</label>
+                    <select id="show" title="@Request.Get("show")">
+                        <option title="@Request.Query("show=20&page=1")" value="20">20</option>
+                        <option title="@Request.Query("show=60&page=1")" value="60">60</option>
+                        <option title="@Request.Query("show=100&page=1")" value="100">100</option>
+                    </select>
+                    <label>Trang @(Request.IsNull("page") ? "1" : @Request.Get("page"))/@ViewBag.TotalPages</label>
+                    <select id="page" title="@Request.Get("page")">
+                        @for (int i = 1; i <= Convert.ToInt32(ViewBag.TotalPages); i++)
+                        {
+                        <option title="@(Request.Query("page=" + i))" value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <!-- End page -->
+        </div>
+        <!-- End list -->
+        </form>
+    </div>
+    <!-- End box1 -->
+    </form>
+
+
+</body>
+</html>

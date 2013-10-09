@@ -1,0 +1,172 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>@ViewBag.News[0]["MetaTitle"]</title>
+@if(!String.IsNullOrEmpty(ViewBag.News[0]["MetaDescription"].ToString()))
+{
+<meta name="description" content="@ViewBag.News[0]["MetaDescription"]" />
+}
+else
+{
+<meta name="description" content="@Convert.ToString((string)ViewBag.News[0]["Brief"]).Truncate(160)" />
+}    
+<meta name="keywords" content="@ViewBag.News[0]["MetaKeyword"]" />
+<link rel="canonical" href="http://@Libs.sApp("Domain")/@(Html.Raw(ViewBag.News[0]["SEOName"])).html" />
+<meta itemprop="image" content="http://@Libs.sApp("Domain")/uploads/@ViewBag.News[0]["Image"]" />
+<meta property="og:image" content="http://@Libs.sApp("Domain")/uploads/@ViewBag.News[0]["Image"]" />
+}
+@section head
+{
+<script type="text/javascript" src="/Script/jquery.validate.js"></script>
+<script type="text/javascript" src="/Script/libs_iGoo.js"></script>
+<script type="text/javascript" src="/Script/fancybox/jquery.fancybox.js"></script>
+<link href="/Script/fancybox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript">
+    $().ready(function () {
+
+        $("a.slideshow-list").fancybox({
+	        'transitionIn': 'elastic',
+	        'transitionOut': 'elastic',
+	        'zoomOpacity': true,
+	        'overlayShow': true,
+	        'zoomSpeedIn': 500,
+	        'zoomSpeedOut': 500
+	    });	
+
+        //Add Comment
+        $('button[id="btnComment"]').click(function () {
+            $(this).text("Đang xử lý!");
+            var id = "@ViewBag.News[0]["NewsID"]";
+            var txtComment =  $('#txtComment').val();
+            var __RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            $.post("@Url.Action("AddComment")", {NewsID: id, txtComment: txtComment,__RequestVerificationToken:__RequestVerificationToken},
+            function (data) {
+                $('.send-c').html(data);
+            });
+        });
+    });
+
+    function Spam(id)
+    {
+        if(confirm("Bạn hãy chắc chắn bài viết này vi phạm?"))
+        {
+            var __RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            $.post("@Url.Action("AddSpam")", {CommentID: id, __RequestVerificationToken:__RequestVerificationToken},
+            function (data) {
+                if(data=="True")
+                {
+                    alert("Cảm ơn bạn! Chúng tôi sẽ kiểm tra câu hỏi này");
+                    $('.'+id).slideUp();
+                }
+                else
+                    alert("Đăng nhập hoặc Đăng ký ngay để báo spam!");
+            });
+        }
+    }
+</script>
+}
+@section main
+{
+<div class="content-h cl">
+    <div class="title-c cl nv">
+        <a rel="nofollow" title="Trang chủ" href="/"><span>Trang chủ</span></a><span class="fl">&raquo;</span>
+        <h2><a itemscope itemtype="http://data-vocabulary.org/Breadcrumb" itemprop="url" title="@ViewBag.News[0]["CateMetaTitle"]" href="@(ViewBag.News[0]["CateSEOName"])"><span itemprop="title">@ViewBag.News[0]["CateName"]</span></a></h2>
+    </div>
+    <div class="news-v">
+        @foreach (var item in ViewBag.News)
+        {
+        <h1 class="h1-t">@item["Title"]</h1>
+        <p class="d">
+        <a rel="author" title="Trang cá nhân G+ của @item["FullName"]" href="https://plus.google.com/@item["GoogleID"]?rel=author" target="_blank">@item["FullName"]</a>
+        @(Libs.ToDateString("dddd, dd/MM/yyyy - hh:mm", Convert.ToDateTime(item["Created"])))
+        </p>
+        <div class="ct">
+            @Html.Raw(@item["Content"])
+        </div>
+        }
+    </div>
+
+    @if (!String.IsNullOrEmpty(ViewBag.NewsRelated[0]))
+    {
+    <div class="news-r">
+        <h3 class="h3-title">Tin liên quan</h3>
+        <ul>
+        @foreach (var item2 in ViewBag.NewsRelated)
+        {
+            <li><h2>@Html.Raw(item2)</h2></li>
+        }
+        </ul>
+    </div>
+    }
+    <div class="news-t">
+        <h3 class="h3-title">Chia sẻ</h3>
+        <input class="text" style="width:450px; float:right;" type="text" value="http://@Libs.sApp("Domain")/@(ViewBag.News[0]["SEOName"]).html" />
+        <!-- AddThis Button BEGIN -->
+        <div style="padding-top:7px;">
+            <div class="addthis_toolbox addthis_default_style ">
+            <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+            <a class="addthis_button_tweet"></a>
+            <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+            <a class="addthis_counter addthis_pill_style"></a>
+            </div>
+            <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-4f838fd33a474624"></script>
+            <!-- AddThis Button END -->
+        </div>
+    </div>
+    @if (!String.IsNullOrEmpty(ViewBag.News[0]["Tags"].ToString()))
+    {
+    <div class="news-t cl atag">
+        <h3 class="h3-title">Từ khoá - Tags</h3>
+        @foreach (var item in ViewBag.News[0]["Tags"].ToString().Split(','))
+        {
+			<a rel="tag" title="@item.Trim()" href="/tags/@item.Trim().Replace(' ', '-')">@item.Trim()</a>
+        }
+        @foreach (var item in ViewBag.News[0]["TagsTitle"].ToString().Split(','))
+        {
+			<a title="@item.Trim()" href="@(@ViewBag.News[0]["SEOName"]).html">@item.Trim()</a>
+        }
+    </div>
+    }
+
+    <div class="comment-c" itemscope itemtype="http://data-vocabulary.org/Review-aggregate">
+        <h3 class="h3-title">Bình luận (<span itemprop="count">@ViewBag.News[0]["TotalComment"]</span>)</h3>
+        @foreach (var item in ViewBag.Comment)
+        {
+        <div class="l @item["CommentID"]">
+            <a title="Trang cá nhân G+ của @item["FullName"]" target="_blank" href="/u/@item["UserName"]"><img class="a"  alt="Ảnh cá nhân của item["FullName"]" src="@("".Equals(item["Image"].ToString()) ? Url.Content("~/Source/images/avatar.jpg") : item["Image"].ToString())" /></a>
+            <p class="t"><a rel="nofollow" title="Trang cá nhân G+ của @item["FullName"]" target="_blank" href="/u/@item["UserName"]">@(item["FullName"])</a></p>
+            <p>@(Libs.ToPrettyDate(Convert.ToDateTime(item["Created"])))</p>
+            <div class="r">
+                <p><g:plusone size="small"></g:plusone></p>
+                <p><a href="javascript:Spam('@item["CommentID"]');">Báo Spam</a></p>
+            </div>
+            <div class="d" id="C-@item["CommentID"]">
+                @item["Content"]
+           </div>
+           @if (!"".Equals(item["Signature"].ToString()))
+           {
+            <p class="s">@Html.Raw(item["Signature"].ToString())</p>
+           }
+        </div>
+        }
+
+        <div class="send-c">
+            <h3 class="h3-title">Gửi bình luận của bạn</h3>
+            @Html.AntiForgeryToken()
+            @if (Session["MemberID"] != null)
+            {
+            <textarea id="txtComment" class="text" rows="8"></textarea>
+            <p class="b"><button type="button" class="button" id="btnComment">Gửi bình luận</button> Nội dung > 20 ký tự!</p>
+            }
+            else
+            {
+                <p><a rel="nofollow" href="info/login">Đăng nhập</a> hoặc <a rel="nofollow" href="info/login">Đăng ký</a> ngay để đăng nhận xét!</p>
+            }
+        </div>
+    </div>
+</div>
+}

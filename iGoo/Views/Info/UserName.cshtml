@@ -1,0 +1,79 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>Thành viên @ViewBag.Info[0]["UserName"]</title>
+<meta name="description" content="Tài khoản: @ViewBag.Info[0]["UserName"] | Họ tên: @ViewBag.Info[0]["FullName"] | Địa chỉ: @ViewBag.Info[0]["Address"]" />
+<meta name="keywords" content="@ViewBag.Info[0]["UserName"]" />
+<link rel="canonical" href="http://@Libs.sApp("Domain")/u/@ViewBag.Info[0]["UserName"]" />
+}
+@section main
+{
+<div class="content-h cl">
+    <div class="main ch1">
+        @foreach (var item in ViewBag.Info)
+        {
+        <h3 class="title-c">Thông tin tài khoản</h3>
+        <div class="account cl">
+            <div class="avt fl">
+                @if ("".Equals(item["Image"].ToString()))
+                {
+                <p><img src="../../Source/images/avatar.jpg" alt="@item["UserName"]"/></p>
+                }
+                else
+                {
+                <p><img src="../../@item["Image"]" alt="@item["UserName"]"/></p> 
+                }
+                <p>@item["Signature"]</p>
+            </div>
+            <div class="info fl">
+                <p><span>Họ tên:</span><span>@item["FullName"]</span></p>
+                <p><span>Địa Chỉ:</span><span> @item["Address"]</span></p>
+            </div>
+        </div>
+        }
+        <h3 class="title-c">Hoạt động mới nhất</h3>
+        <div class="notifi">
+        @foreach (var item in ViewBag.History)
+        {
+            if ("0".Equals(item["Type"].ToString()))
+            {
+            <p><a target="_blank" href="/@(item["SEOName"]).html">@item["Title"]</a><span style="font-size:10px;float:right;"> @(Libs.ToPrettyDate(Convert.ToDateTime(item["Created"])))</span></p>
+            }
+            else if ("1".Equals(item["Type"].ToString()))
+            {
+            <p><a target="_blank" href="/p/@(item["SEOName"]).html">@item["Title"]</a><span style="font-size:10px;float:right;"> @(Libs.ToPrettyDate(Convert.ToDateTime(item["Created"])))</span></p>
+            }
+            else
+            {
+            <p><a target="_blank" href="/hoidap/@(item["SEOName"]).html">@item["Title"]</a><span style="font-size:10px;float:right;"> @(Libs.ToPrettyDate(Convert.ToDateTime(item["Created"])))</span></p>
+            }
+        }
+        </div>
+
+        @{
+        int space = 5, a, b;
+        int p = Convert.ToInt32(ViewBag.TotalPages);
+        int c = Convert.ToInt32(ViewBag.CategoryPage);
+        if (c > space) { a = c - space; } else { a = 1; }
+        if (c + space > p) { b = p; } else { b = c + space; }
+        }
+        <div class="page cl">
+            <span>Trang @ViewBag.CategoryPage / @ViewBag.TotalPages</span>
+            @for (int i = a; i <= b; i++)
+            {
+                if (i == c)
+                {
+                <a class="page-c" title="Trang @(i.ToString())" href="/u/@ViewBag.Info[0]["UserName"]/@i.ToString()">@i.ToString()</a>
+                }
+                else
+                {
+                <a title="Trang @(i.ToString())" href="/u/@ViewBag.Info[0]["UserName"]/@i.ToString()">@i.ToString()</a>
+                }
+            }
+        </div>
+    </div>
+</div>
+}

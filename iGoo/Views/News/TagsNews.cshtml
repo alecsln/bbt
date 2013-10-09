@@ -1,0 +1,80 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+@if(ViewBag.Meta.Count > 0)
+{
+<title>@ViewBag.Meta[0]["MetaTitle"]</title>
+<meta name="description" content="@ViewBag.Meta[0]["MetaDescription"]" />
+<meta name="keywords" content="@ViewBag.Meta[0]["MetaKeyword"]" />
+}
+else
+{
+<title>@ViewBag.TagsTitle.Replace('-', ' '), @Libs.sKhongDau(ViewBag.TagsTitle.Replace('-', ' ')) | Tags Bài viết</title>
+<meta name="keywords" content="Tags Bài viết: @ViewBag.TagsTitle.Replace('-', ' '), @Libs.sKhongDau(ViewBag.TagsTitle.Replace('-', ' ')) | @ViewBag.Website[0]["MetaTitle"]" />
+}
+<link rel="canonical" href="http://@Libs.sApp("Domain")/tags/@Html.Raw(ViewBag.TagsTitle)" />
+}
+@section main
+{
+<div class="content-h cl">
+    <div class="ch1">
+        <div class="title-c cl nv">
+            <h1>Tags: @ViewBag.TagsTitle.Replace('-', ' '), @Libs.sKhongDau(ViewBag.TagsTitle.Replace('-', ' '))</h1>
+        </div>
+        @if (ViewBag.Meta.Count > 0)
+        {
+        <div>@Html.Raw(ViewBag.Meta[0]["Description"])</div>
+        }
+        <div class="news-l">
+        @if (ViewBag.News.Count > 0)
+        {
+            foreach (var item in ViewBag.News)
+            {
+            <div class="n cl">
+                <h2><a title="@item["MetaTitle"]" href="/@(item["SEOName"]).html">@item["Title"]</a></h2>
+                <p class="d">
+                <a rel="nofollow" rel="author" title="Trang cá nhân G+ của @item["FullName"]" href="https://plus.google.com/@item["GoogleID"]/posts" target="_blank">@item["FullName"]</a>
+                | @item["TotalComment"] bình luận | @(Libs.ToDateString("dddd, dd/MM/yyyy - hh:mm", Convert.ToDateTime(item["Created"]))) <g:plusone size="small" href="http://igoo.vn/@(item["SEOName"]).html"></g:plusone>
+                </p>
+                <a title="@item["MetaTitle"]" href="/@(item["SEOName"]).html"><img alt="@item["MetaTitle"]" class="img" src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "100x100")))" /></a>
+                <p class="b">@item["Brief"]</p>
+
+                @if (!String.IsNullOrEmpty(item["Tags"].ToString()))
+                {
+                <p class="t atag">
+                @foreach (var tags in item["Tags"].ToString().Split(','))
+                {
+                    <a title="@tags.Trim()" href="/tags/@tags.Trim().Replace(' ', '-')">@tags.Trim()</a>
+                }
+                </p>
+                }
+            </div>
+            }
+        }
+        else
+        {
+            <p class="not-found">Nội dung đang được cập nhật!</p>
+        }
+        </div>
+    </div>
+    <!-- end ch1 -->
+    <div class="ch2">
+        <div class="adv">
+        @foreach (var item in ViewBag.AdvRight)
+        {
+            if (Path.GetExtension(item["File"]).ToLower().Equals(".swf"))
+            {
+            <embed src="/Uploads/@item["File"]" width="@item["Width"]" height="@item["Height"]" type="application/x-shockwave-flash" wmode="transparent"></embed>
+            }
+            else
+            {
+            <p><a title="@item["Title"]" @Html.Raw(item["Target"].ToString().Equals("1") ? "target=\"_blank\"" : String.Empty) href="@item["UrlLink"]"><img alt="@item["Title"]" src="/Uploads/@item["File"]" width="208" /></a></p>
+            }
+        }
+        </div>
+    </div>
+</div>
+}

@@ -1,0 +1,64 @@
+﻿@using iGoo.Helpers
+@using System.Text.RegularExpressions;
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@{String Content = ViewBag.Website[0]["AddressContact"];}
+@section meta
+{
+<title>Liên hệ & Góp ý</title>
+<meta name="description" content="@Libs.RemoveTags(Content).Truncate(160)" />
+<link rel="canonical" href="http://@Libs.sApp("Domain")/contact" />
+}
+@section head
+{
+<script type="text/javascript" src="/Script/jquery.validate.js"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        $("#frmContact").validate({
+            errorPlacement: function (error, element) { },
+            rules: {
+                txtEmail: "required",
+                txtSubject: "required",
+                txtContent: "required"
+            }
+        });
+    });
+</script>
+}
+@section main
+{
+<div class="content-h action cl">
+    <div class="register">
+        <form id="frmContact" action="@Url.Action("AddContact")" method="post">
+            <h3 class="h3-title">Liên hệ & Góp ý</h3>
+            @if (@Request.Get("urlResult").Equals("1"))
+            {
+                <p class="result">Cập nhật thành công!</p>
+            }
+            @if (@Request.Get("urlError").Equals("1"))
+            {
+            <p class="error">Có lỗi, xin nhập đúng thông tin và thử lại!</p>
+            }
+            <p><label>Tiêu đề </label><input class="text" type="text" name="txtSubject" /></p>
+            <p><label>Họ tên </label><input class="text" type="text" name="txtFullName" /></p>
+            <p><label>Email </label><input class="text" type="text" name="txtEmail" /></p>
+            <p><label>Điện thoại </label><input class="text" type="text" name="txtPhone" /></p>
+            <p><label>Gửi tới </label>
+            <select class="select" name="slSearchGroupContact" title="@Request.Get("slSearchGroupContact")" >
+                @foreach (var item in ViewBag.GroupContact)
+                {
+                <option value="@item["AttributeID"]">@item["Name"]</option>
+                }
+            </select>
+            </p>
+            <p><label>Nội dung</label><textarea class="text" id="txtContent" name="txtContent" rows="10"></textarea></p>
+            <p style="text-align:center;"><button class="button" type="submit">Gửi</button> <button class="button" type="reset">Làm lại</button></p>
+        </form>
+    </div>
+    <div class="login">
+        <h3 class="h3-title">Thông tin liên hệ</h3>
+        @Html.Raw(ViewBag.Website[0]["AddressContact"])
+    </div>
+</div>
+}

@@ -1,0 +1,218 @@
+﻿ @using iGoo.Helpers
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ogp.me/ns#" itemscope itemtype="http://schema.org/Article">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+<meta http-equiv="content-language" content="vi" />
+@RenderSection("meta", false)
+<link rel="stylesheet" type="text/css" href="/Source/images/styles.css" />
+<script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-2347404-24']);
+    _gaq.push(['_trackPageview']);
+
+    (function () {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
+</head>
+<body>
+<div class="wrapper">
+	<div class="toolbar cl">
+    	<div class="c">
+            <div class="l">
+                <span style="vertical-align:middle;">@ViewBag.Website[0]["Title"]</span>
+                <div class="g-plusone" data-size="medium" data-href="http://babycuatoi.vn"></div>
+            </div>
+            <div class="r">
+                <ul>
+                    <li class="s"><a href="#" title="">Hỗ trợ trực tuyến</a>
+                    	<div class="r-s">
+                            @Html.Raw(ViewBag.StaticSupport[0]["Description"])
+                        </div>
+                    </li>
+                    @if (Session["MemberID"] == null)
+                    {
+                    <li><a rel="nofollow" title="Đăng ký" href="/info/login">Đăng ký</a></li>
+                    <li><a rel="nofollow" title="Đăng nhập" href="/info/login">Đăng nhập</a></li>
+                    }
+                    else
+                    {
+                    <li><a @Html.Raw(!"0".Equals(ViewBag.NotificationCount.ToString())?"class=\"nofifi\"" : "") rel="nofollow" href="/info/notification">@ViewBag.NotificationCount</a></li>
+                    <li><a rel="nofollow" href="/info">@Session["FullName"]</a></li>
+                    <li><a rel="nofollow" href="/order/mycart">Đơn hàng</a></li>
+                    <li><a rel="nofollow" href="/info/logout">Thoát</a></li>
+                    }
+                    <li class="icon-cart"><a rel="nofollow" href="/order" title="">Giỏ hàng <span id="count_shopping_cart"></span></a></li>
+                </ul>
+            </div>
+        </div>
+  	</div>
+    <!-- end toolbar -->
+    <div class="nav cl">
+    	<div class="c">
+            <div class="logo">
+                <a rel="nofollow" href="/" title="Về trang chủ"><img src="/Source/images/logo.png" alt="Logo Baby của tôi" /></a>
+            </div>
+            <div class="fl">
+                @foreach (var item in ViewBag.AdvTop)
+                {
+                    if (Path.GetExtension(item["File"]).ToLower().Equals(".swf"))
+                    {
+                    <embed src="/Uploads/@item["File"]" width="@item["Width"]" height="@item["Height"]" type="application/x-shockwave-flash" wmode="transparent"></embed>
+                    }
+                    else
+                    {
+                    <a title="@item["Title"]" @Html.Raw(item["Target"].ToString().Equals("1") ? "target=\"_blank\"" : String.Empty) href="@item["UrlLink"]"><img alt="@item["Title"]" src="/Uploads/@item["File"]" height="70" /></a>
+                    }
+                }
+            </div>
+            <div class="fr">
+                <img src="/Source/images/hotline.png" alt="Baby của tôi!" />
+            </div>
+        </div>
+  </div>
+    <!-- end nav -->
+    <div class="main cl">
+    	<div class="left" id="slide-menu">
+            @foreach (var item in ViewBag.Menu)
+            {
+        	<div class="cate">
+            	<h3>@item.Name</h3>
+                <ul>
+                    @foreach (var item1 in @item.Menu)
+                    {
+                	<li><a title="@item1.MetaTitle" href="/p/@item1.SEOName">@item1.Name</a>
+                       @if (@item1.Menu.Count > 0)
+                       {
+                        <ul>
+                            @foreach (var item2 in @item1.Menu)
+                            {
+                	        <li><a title="@item2.MetaTitle" href="/p/@item2.SEOName">@item2.Name</a></li>
+                            }
+                        </ul>                    
+                       }
+                    </li>
+                    }
+                </ul>
+            </div>
+            }
+
+            <div class="adv">
+            @foreach (var item in ViewBag.AdvLeft)
+            {
+                if (Path.GetExtension(item["File"]).ToLower().Equals(".swf"))
+                {
+                <embed src="/Uploads/@item["File"]" width="@item["Width"]" height="@item["Height"]" type="application/x-shockwave-flash" wmode="transparent"></embed>
+                }
+                else
+                {
+                <p><a title="@item["Title"]" @Html.Raw(item["Target"].ToString().Equals("1") ? "target=\"_blank\"" : String.Empty) href="@item["UrlLink"]"><img alt="@item["Title"]" src="/Uploads/@item["File"]" width="150" /></a></p>
+                }
+            }
+            </div>
+        </div>
+        <!-- end left-->
+        <div class="content cl">
+        	<div class="nav2 cl">
+            	<div class="menu">
+                	<ul>
+                        <li><a rel="nofollow" href="/" title="Về trang chủ">Trang chủ</a></li>
+                        <li><a href="/p/sanpham" title="Sản phẩm">Sản phẩm</a></li>
+                        @foreach (var item in ViewBag.MenuNews)
+                        {
+                	    <li><a title="@item.MetaTitle" href="/@item.SEOName">@item.Name</a>
+                            <ul>
+                                @foreach (var item1 in @item.Menu)
+                                {
+                	            <li><a title="@item1.MetaTitle" href="/@item1.SEOName">@item1.Name</a></li>
+                                }
+                            </ul>                    
+                        </li>
+                        }
+                        <li><a href="/hoidap" title="">Hỏi đáp</a></li>
+                        <li><a href="/contact" title="Liên hệ">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="search fr">
+                	<form action="/p/sanpham">
+                	    <input name="key" type="text" class="text" onclick="javascript:this.value='';" value="Từ khoá..." />
+                        <button type="submit" class="btn_search"></button>
+                    </form>
+                </div>
+            </div>
+            <!-- end nav2 -->
+            @RenderSection("main", false)
+        </div>
+        @if (ViewBag.ProductHistory != null && ViewBag.ProductHistory.Count > 0)
+        {
+        <div class="product_h clearboth">
+            <h3 class="title-c">Sản phẩm đã lưu</h3>
+            <ul id="product_history">
+                @foreach (var item in ViewBag.ProductHistory)
+                {
+                <li>
+                    <div class="item_h">
+                        <p><a href="/p/@(item["SEOName"]).html" title="@item["MetaTitle"]"><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item["Image"].ToString(), "120x120")))" alt="@item["MetaTitle"]" /></a></p>
+                        <p class="price">Giá bán: @Libs.sCurrency(Convert.ToDecimal(item["SalePrice"])) VNĐ</p>
+                        <p><a class="title" href="/p/@(item["SEOName"]).html" title="@item["MetaTitle"]">@item["Title"]</a></p>
+                    </div>
+                </li>
+                }
+            </ul>
+        </div>
+        }
+    </div>
+    <!-- end main-->
+  <div class="footer cl">
+    	<div class="c">
+            <div class="fl">
+                <p>Bản quyền ©2012 Babycuatoi.vn – Chăm sóc bé yêu!</p>
+                <p><a href="http://dangcapweb.com" target="_blank" title="Thiết kế Web"><strong>Thiết kế Web</strong></a> bởi Dangcapweb.com</p>
+                <p>Liên kết: <a href="http://www.richmedia.com.vn/" target="_blank" title="Rich Media">Rich Media</a> | <a href="http://onlinefashion.vn/" target="_blank" title="Thời trang cho người béo">Thời trang cho người béo</a></p>
+            </div>
+            <div class="fr">
+                @Html.Raw(ViewBag.Website[0]["AddressFooter"])
+                <p>Sitemap: <a rel="sitemap" target="_blank" title="Sitemap HTML bài viết" href="/sitemap/news">Sitemap News</a> <a rel="sitemap" target="_blank" title="Sitemap HTML sản phẩm" href="/sitemap/product">Sitemap Product</a> <a rel="sitemap" target="_blank" title="Sitemap HTML Hỏi & Đáp" href="/sitemap/answer">Sitemap Answer</a></p>
+            </div>
+        </div>
+  </div>
+    <div class="payment">
+    	<img src="/Source/images/pay.png" alt="Payment" />
+    </div>
+    <div class="seo-footer">
+    	<div class="c">
+            @Html.Raw(ViewBag.Website[0]["SEOFooter"])
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/Script/jquery.js"></script>
+<script type="text/javascript" src="/Script/libs_iGoo.js"></script>
+<script type="text/javascript" src="/Script/bxslider/jquery.bxSlider.js"></script>
+<link rel="stylesheet" type="text/css" href="/Script/bxslider/bx_styles.css" />
+<script type="text/javascript">
+    $().ready(function () {
+        $('.toolbar').click(function () {
+            $('html, body').animate({ scrollTop: '0px' }, 500);
+        });
+        countShoppingCart("shopping_cart");
+
+        $('#product_history').bxSlider({
+            auto: true,
+            displaySlideQty: 5,
+            moveSlideQty: 5,
+            pager: true
+        });
+    });
+</script>
+@RenderSection("head", false)
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+    { lang: 'vi' };
+</script>
+</html>

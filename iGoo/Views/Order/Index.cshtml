@@ -1,0 +1,125 @@
+﻿@using iGoo.Helpers
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>Giỏ hàng</title>
+<meta name="robots" content="noindex,nofollow" />
+}
+@section head
+{
+<script type="text/javascript" src="/Script/jquery.tooltip.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $(".tooltip").tooltip({
+            bodyHandler: function () {
+                return $(this).children(".tooltip_content").html()
+            },
+            track: true,
+            showURL: false
+        });
+    });
+</script>
+}
+@section main
+{
+<div class="content-h cl">
+    <div class="order_main action">
+        <form id="frmOrder" action="@Url.Action("SendOrder")" method="post">
+            <div class="register">
+                @if (@Request.Get("result").Equals("1"))
+                {
+                    <p class="result">Bạn đã đặt hàng thành công! Chúng tôi sẽ liên lạc sớm nhất với bạn. Xin cám ơn!</p>
+                }
+                else
+                {
+                <p class="error">Có lỗi, xin nhập đúng thông tin và thử lại!</p>
+                }
+                @if(ViewBag.User != null)
+                {
+                <div class="order_from">
+                    <h3 class="h3-title">Người mua hàng</h3>
+                    <input type="hidden" name="txtUserID" value="@ViewBag.User[0]["UserID"]" />
+                    <p><label>Họ và tên</label><input class="text" type="text" name="txtFullName" id="txtFullName" value="@ViewBag.User[0]["FullName"]" /></p>
+                    <p><label>Email</label><input class="text" type="text" name="txtEmail" id="txtEmail" value="@ViewBag.User[0]["Email"]" /></p>
+                    <p><label>Điện thoại</label><input class="text" type="text" name="txtPhone" id="txtPhone" value="@ViewBag.User[0]["Phone"]" /></p>
+                    <p><label>Địa chỉ</label><input class="text" type="text" name="txtAddress" id="txtAddress" value="@ViewBag.User[0]["Address"]" /></p>
+                </div>
+                }
+                else
+                {
+                    <p><a href="/info/login"><strong>Đăng ký</strong></a> để quản lý giỏ hàng tốt hơn và chia sẻ kết bạn!</p>
+                }
+                <div class="order_to">
+                    <h3 class="h3-title">Người nhận hàng</h3>
+                    <p><label>Họ và tên</label><input class="text" type="text" name="txtFullNameRec" id="txtFullNameRec" /></p>
+                    <p><label>Email</label><input class="text" type="text" name="txtEmailRec" id="txtEmailRec" /></p>
+                    <p><label>Điện thoại</label><input class="text" type="text" name="txtPhoneRec" id="txtPhoneRec" /></p>
+                    <p><label>Địa chỉ</label><input class="text" type="text" name="txtAddressRec" id="txtAddressRec" /></p>
+                    <p><label>Mã giảm giá</label><input class="text" type="text" name="txtVoucher" id="txtVoucher" /></p>
+                    <p><label>Yêu cầu thêm</label><textarea class="text" id="txtRequest" name="txtRequest" rows="5"></textarea></p>
+                </div>
+            </div>
+            <div class="login">
+                <h3 class="h3-title">Hướng dẫn mua hàng</h3>
+                @Html.Raw(ViewBag.StaticGuide[0]["Description"])
+            </div>
+            <div class="table-list">
+                <table>
+                    <thead>
+                        <th>#</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá (VNĐ)</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền (VNĐ)</th>
+                    </thead>
+                    <tbody>
+                        @{Decimal total = 0;}
+                        @if(ViewBag.OrderDetails != null)
+                        {
+                            int count = 0;
+                            foreach (var item in ViewBag.OrderDetails)
+                            {
+                                count += 1;
+                                total += item.TotalPrice;
+                            <tr>
+                                <td>@count</td>
+                                <td class="subject">
+                                    <div class="tooltip">
+                                        <a class="title" target="_blank" href="/p/@(item.SEOName).html" title="@item.Title">@item.Title</a>
+                                        <div class="tooltip_content">
+                                            <p class="title">@item.Title</p>
+                                            <p class="price">Giá bán: @Libs.sCurrency(Convert.ToDecimal(item.SalePrice)) VNĐ</p>
+                                            <p><img src="@(Url.Content("~/thumb/" + Libs.ThumbName(item.Image, "350x350")))" alt="@item.Title" /></p>
+                                        </div>
+                                    </div>
+                                    <div class="edit">
+                                        <a href="javascript:updateCart('@item.ProductID',@item.Quantity,'@item.Attribute');">Cập nhật</a>
+                                        <a href="javascript:deleteFromCart('@item.ProductID',@item.Quantity,'@item.Attribute');">Xóa</a>
+                                    </div>
+                                </td>
+                                <td>@Libs.sCurrency(Convert.ToDecimal(@item.SalePrice))</td>
+                                <td><input class="text" style="width:50px;" id="item_@(item.ProductID)" type="text" value="@item.Quantity" onchange="updateCart('@item.ProductID',@item.Quantity,'@item.Attribute');" /></td>
+                                <td>@Libs.sCurrency(Convert.ToDecimal(@item.TotalPrice))</td>
+                            </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <th>#</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tfoot>
+                </table>
+                <div class="cart-a">
+                    <p class="i"><label>Tổng tiền</label><span class="price">@Libs.sCurrency(Convert.ToDecimal(total)) VNĐ</span></p>
+                    <p class="a cl"><button class="button" type="button">Quay lại mua hàng</button> <button class="button" type="submit" id="btnSendOrder">Đặt hàng</button></p>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+}

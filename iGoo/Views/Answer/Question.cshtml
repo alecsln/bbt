@@ -1,0 +1,102 @@
+﻿@using iGoo.Helpers
+
+@{
+    Layout = "~/Views/Layout/Home2.cshtml";
+}
+@section meta
+{
+<title>Đặt câu hỏi & Chia sẻ kinh nghiệm</title>
+<meta name="robots" content="noindex,nofollow" />
+<script type="text/javascript" src="/Script/bbeditor/ed.js"></script>
+}
+@section head
+{
+<script src="/Script/jquery.validate.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        //Validate form
+        $("#frmAdd").validate({
+            errorPlacement: function (error, element) { },
+            rules: {
+                txtTitle: "required",
+                txtContent:{
+                    required: true,
+                    minlength: 20
+                }
+            },
+            submitHandler: function (form) {
+                if (!this.wasSent) {
+                    this.wasSent = true;
+                    $submit = $(':submit', form);
+                    $submit.attr('disabled', 'disabled');
+                    $submit.text("Đang xử lý!");
+                    AddQuestion();
+
+                    //form.submit();
+                } else {
+                    return false;
+                }
+            }
+
+        });
+
+        function AddQuestion () {
+            var cate = $('#slCategory').val();
+            var txtTitle= $('#txtTitle').val();
+            var txtContent =  $('#txtContent').val();
+            var id = $('#ID').val();
+            var __RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            $.post("@Url.Action("AddQuestion")", {id: id, cate: cate, txtTitle: txtTitle, txtContent: txtContent,__RequestVerificationToken:__RequestVerificationToken},
+            function (data) {
+                if("2" == data)
+                {
+                    $('.result').html("Câu hỏi của bạn đã tồn tại, vui lòng tìm kiếm");                    
+                    $('#btnAddQuestion').removeAttr("disabled");
+                    $('#btnAddQuestion').text("Thử lại");
+                }
+                else if("0" == data)
+                {
+                    $('.result').html("Xin lỗi! Vui lòng hãy thử lại!");
+                    $('#btnAddQuestion').removeAttr("disabled");
+                    $('#btnAddQuestion').text("Thử lại");
+                }
+                else
+                window.location.href = "/" + data;
+            });
+        };
+    });
+</script>
+}
+@section main
+{
+<div class="content-h cl">
+    <h1 class="title-c">Đặt câu hỏi và chia sẻ với mọi người!</h1>
+    <div class="question">
+        @if (Session["MemberID"] != null)
+        {
+            <form id="frmAdd">
+            <p class="result"></p>
+            @{bool flag = ViewBag.Edit == null;}
+            <p><label>Tiêu đề câu hỏi</label><input class="text" type="text" name="txtTitle" id="txtTitle" value="@(flag ? String.Empty : ViewBag.Edit[0]["Title"])" /></p>
+            <p><label>Nội dung</label>
+                <select class="select" name="slCategory" id="slCategory" title="@(flag ? String.Empty : ViewBag.Edit[0]["CategoryID"])" >
+                    @foreach (var item in ViewBag.MenuAnswer)
+                    {
+                    <option value="@item["CategoryID"]">@item["Name"]</option>
+                    }
+                </select>
+            </p>
+            <script>                edToolbar('txtContent');</script>
+            <p><textarea class="textarea" name="txtContent" id="txtContent" rows="10">@(flag ? String.Empty : ViewBag.Edit[0]["Content"])</textarea></p>
+            <p style="font-weight:normal;">Nội dung trong khoảng (20 -> 5000) ký tự!</p>
+            <p style="text-align:center;">@Html.AntiForgeryToken()<button class="button" type="submit" id="btnAddQuestion">@(flag ? "Gửi câu hỏi" : "Cập nhật câu hỏi")</button></p>
+            <input type="hidden" id="ID" name="ID" value="@(flag ? String.Empty : ViewBag.Edit[0]["QuestionID"])" />
+            </form>
+        }
+        else
+        {
+            <p><a rel="nofollow" href="/info/login">Đăng nhập</a> hoặc <a rel="nofollow" href="/info/login">Đăng ký</a> ngay để đăng câu hỏi!</p>
+        }
+    </div>
+</div>
+}

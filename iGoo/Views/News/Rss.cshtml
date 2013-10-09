@@ -1,0 +1,36 @@
+﻿@using iGoo.Helpers;
+@{Response.ContentType = "text/xml";}
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+xmlns:content="http://purl.org/rss/1.0/modules/content/"
+xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:atom="http://www.w3.org/2005/Atom"
+xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://search.yahoo.com/mrss/"
+>
+<channel>
+<title><![CDATA[ @ViewBag.Category[0]["MetaTitle"] ]]></title>
+<atom:link href="http://@Libs.sApp("Domain")/@(ViewBag.Category[0]["SEOName"]).rss" rel="self" type="application/rss+xml" />
+<link>http://binhminhviet.vn</link>
+<description><![CDATA[ @ViewBag.Category[0]["MetaDescription"] ]]></description>
+<lastBuildDate>@String.Format("{0:r}", DateTime.Now)</lastBuildDate>
+<language>vi</language>
+<sy:updatePeriod>hourly</sy:updatePeriod>
+<sy:updateFrequency>1</sy:updateFrequency>
+<generator>http://binhminhviet.vn</generator>
+<atom:link rel="hub" href="http://pubsubhubbub.appspot.com"/>
+<atom:link rel="hub" href="http://superfeedr.com/hubbub"/>
+@foreach (var item in ViewBag.Rss)
+{
+<item>
+<title><![CDATA[ @item["Title"] ]]></title>
+<link><![CDATA[ http://@Libs.sApp("Domain")/@(item["SEOName"]).html ]]></link>
+<guid isPermaLink="false"><![CDATA[ http://@Libs.sApp("Domain")/@(item["SEOName"]).html ]]></guid>
+<description><![CDATA[ <a href = 'http://@Libs.sApp("Domain")/@(item["SEOName"]).html' >
+<img border="0" src="http://@Libs.sApp("Domain")/uploads/@item["Image"]" /></a> @item["Brief"] ]]></description>
+<pubDate>@String.Format("{0:r}", Convert.ToDateTime(item["Created"]))</pubDate>
+<category><![CDATA[ @ViewBag.Category[0]["Name"] ]]></category>
+</item>
+}
+</channel></rss>

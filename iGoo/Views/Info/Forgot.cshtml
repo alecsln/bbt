@@ -1,0 +1,62 @@
+﻿@using iGoo.Helpers
+
+@{
+    Layout = "~/Views/Layout/Home.cshtml";
+}
+@section meta
+{
+<title>Lấy lại mật khẩu!</title>
+<meta name="robots" content="noindex,nofollow" />
+}
+@section head
+{
+<script type="text/javascript" src="/Script/jquery.validate.js"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        //Validate form
+        $("#frmForgot").validate({
+            errorPlacement: function (error, element) { },
+            rules: {
+                txtEmail: "required"
+            },
+            submitHandler: function (form) {
+                if (!this.wasSent) {
+                    this.wasSent = true;
+                    $submit = $(':submit', form);
+                    $submit.attr('disabled', 'disabled');
+                    $submit.text("Đang xử lý!");
+                    form.submit();
+                } else {
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+}
+@section main
+{
+<div class="content-h action cl">     
+	<div class="forgot">
+        <form id="frmForgot" action="@Url.Action("ForgotAction")" method="post">
+            <h3 class="h3-title">Quên mật khẩu?</h3>
+            @if (@Request.Get("forgotResult").Equals("1"))
+            {
+            <p class="result">Mật khẩu mới đã được gửi vào Email của bạn!</p>
+            <p class="result">Nếu bạn vẫn chưa nhận được Email, xin liên hệ [YM] igoovn - [E] igoovn@gmail.com để được trợ giúp, thanks!</p>
+            }
+            @if (@Request.Get("forgotError").Equals("1"))
+            {
+            <p class="error">Email không tồn tại! </p>
+            }
+            @if (@Request.Get("forgotError").Equals("2"))
+            {
+            <p class="result">Có lỗi trong quá trình gửi Email, xin liên hệ [YM] igoovn - [E] igoovn@gmail.com để được trợ giúp, thanks!</p>
+            }
+
+            <p><label>Email </label><input class="text" type="text" name="txtEmail" /></p>
+            <p><label></label><button class="button" type="submit">Lấy lại mật khẩu</button></p>
+        </form>
+    </div>
+</div>
+}
